@@ -1437,10 +1437,15 @@ function nav(id, btn) {
 // ── Claude API ───────────────────────────────────────────────────────────────
 async function ai(prompt) {
   const key = localStorage.getItem('anthropic_key') || '';
-  if (!key) {
+  if (!key) { showKeySetup(); return '⚠ Configure sua chave Anthropic primeiro (botão ⚙️ no canto inferior direito).'; }
+
+  // Detect if a Google key was accidentally stored as Anthropic key
+  if (key.startsWith('AIza')) {
+    localStorage.removeItem('anthropic_key');
     showKeySetup();
-    return '⚠ Configure sua chave da API Anthropic primeiro (botão ⚙️ no canto inferior direito).';
+    return '⚠ A chave salva é do Google (AIza...). Cole sua chave Anthropic (sk-ant-...) no botão ⚙️.';
   }
+
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -2852,6 +2857,12 @@ function saveApiKey() {
 
 // On load: update button if key already saved
 document.addEventListener('DOMContentLoaded', () => {
+  // Auto-clean: if anthropic_key has a Google key saved by mistake, remove it
+  const storedKey = localStorage.getItem('anthropic_key') || '';
+  if (storedKey.startsWith('AIza')) {
+    localStorage.removeItem('anthropic_key');
+  }
+
   if (localStorage.getItem('anthropic_key')) {
     document.getElementById('api-cfg-btn').classList.add('key-ok');
     document.getElementById('api-cfg-btn').textContent = '✓';

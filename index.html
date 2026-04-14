@@ -98,6 +98,22 @@ input[type=text]:focus,input[type=email]:focus,input[type=password]:focus,select
   border-color:rgba(204,31,31,0.45);box-shadow:0 0 0 3px rgba(204,31,31,0.07)}
 input::placeholder,textarea::placeholder{color:var(--muted);opacity:0.7}
 textarea{resize:vertical;line-height:1.7}
+/* ── MIC BUTTON ── */
+.mic-wrap{position:relative;display:block;width:100%}
+.mic-wrap input[type=text],
+.mic-wrap input[type=email],
+.mic-wrap input[type=password],
+.mic-wrap textarea{padding-right:42px !important}
+.mic-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .18s;z-index:2;color:var(--muted);font-size:16px;line-height:1}
+.mic-wrap textarea ~ .mic-btn{top:12px;transform:none}
+.mic-btn:hover{color:var(--text2);background:rgba(255,255,255,0.06)}
+.mic-btn.listening{color:var(--accent);animation:micPulse 1s infinite}
+.mic-btn.listening svg circle{fill:var(--accent)}
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(204,31,31,0.4)}50%{box-shadow:0 0 0 7px rgba(204,31,31,0)}}
+.mic-tooltip{position:absolute;right:38px;top:50%;transform:translateY(-50%);background:var(--card2);border:1px solid var(--border2);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--text2);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;font-family:var(--font-body)}
+.mic-wrap textarea ~ .mic-tooltip{top:14px;transform:none}
+.mic-btn:hover ~ .mic-tooltip,.mic-btn.listening ~ .mic-tooltip{opacity:1}
+.mic-no-support{font-size:11px;color:var(--muted);margin-top:4px;display:none}
 select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%235a5a62' d='M8 11L3 6h10z'/></svg>");background-repeat:no-repeat;background-position:right 12px center;background-size:14px;padding-right:36px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
 
@@ -231,6 +247,28 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
 .prompt-tip{font-size:11.5px;color:var(--muted);padding:0 16px 14px;line-height:1.6}
 .pj-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.03)}
 .pj-section-title{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;font-family:var(--font-mono)}
+/* Remotion */
+.rem-step{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.03)}
+.rem-step-num{width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-family:var(--font-mono)}
+.rem-step-body{flex:1}
+.rem-step-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;font-family:var(--font-display)}
+.rem-step-desc{font-size:12.5px;color:var(--muted);line-height:1.65}
+.rem-code-block{background:var(--dim);border:1px solid var(--border2);border-radius:8px;padding:12px 16px;font-family:var(--font-mono);font-size:12.5px;color:var(--blue);margin-top:8px;position:relative;overflow-x:auto;white-space:pre}
+.rem-copy-btn{position:absolute;top:8px;right:8px;background:var(--card2);border:1px solid var(--border2);border-radius:5px;padding:3px 9px;font-size:10.5px;color:var(--muted);cursor:pointer;font-family:var(--font-body);transition:all .15s}
+.rem-copy-btn:hover{color:var(--text2);border-color:var(--border3)}
+.rem-file-card{background:var(--card);border:1px solid var(--border2);border-radius:12px;overflow:hidden;margin-top:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.04)}
+.rem-file-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.rem-file-name{font-size:12px;font-weight:600;color:var(--purple);font-family:var(--font-mono)}
+.rem-file-body{padding:0}
+.rem-file-code{padding:18px 20px;font-family:var(--font-mono);font-size:12.5px;color:var(--text2);line-height:1.75;white-space:pre-wrap;overflow-x:auto;max-height:500px;overflow-y:auto;background:var(--dim)}
+.rem-preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.rem-preset{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:12px 14px;cursor:pointer;transition:all .15s;box-shadow:inset 0 1px 0 rgba(255,255,255,0.03)}
+.rem-preset:hover{border-color:var(--border2);background:var(--card2)}
+.rem-preset.active{border-color:var(--acc-br);background:var(--acc-bg)}
+.rem-preset-icon{font-size:22px;margin-bottom:6px}
+.rem-preset-name{font-size:12px;font-weight:700;color:var(--text2)}
+.rem-preset.active .rem-preset-name{color:#e06060}
+.rem-preset-desc{font-size:10.5px;color:var(--muted);margin-top:2px}
 
 /* ── ROTEIRO CARD ── */
 .rot-card{margin-top:22px;border:1px solid var(--border2);border-radius:10px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,0.03)}
@@ -385,6 +423,10 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
         <button class="nav-btn" onclick="nav('master',this)">
           <span class="nb-icon">🎚️</span>
           <span class="nb-text"><span class="nb-name">Masterização</span><span class="nb-sub">Áudio profissional</span></span>
+        </button>
+        <button class="nav-btn" onclick="nav('remotion',this)">
+          <span class="nb-icon">⚛️</span>
+          <span class="nb-text"><span class="nb-name">Remotion</span><span class="nb-sub">Edição por código</span></span>
         </button>
       </div>
     </div>
@@ -717,6 +759,125 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
   </button>
 
   <div id="m-results" style="margin-top:20px"></div>
+</div>
+
+<!-- ── REMOTION ── -->
+<div id="tab-remotion" class="tab-pane">
+  <div class="tab-header">
+    <h2><span>⚛️</span> Remotion</h2>
+    <p>Descreva o que você quer no vídeo — a IA gera o código React/Remotion completo, pronto para rodar no seu PC e exportar em MP4.</p>
+  </div>
+  <div class="sep"></div>
+
+  <!-- Setup guide -->
+  <div id="rem-setup-toggle" style="margin-bottom:20px">
+    <button class="btn-ghost" onclick="remToggleSetup()" style="font-size:12.5px">📦 Como instalar o Remotion — ver guia</button>
+  </div>
+  <div id="rem-setup" style="display:none;margin-bottom:24px">
+    <div class="rem-step">
+      <div class="rem-step-num">1</div>
+      <div class="rem-step-body">
+        <div class="rem-step-title">Instalar Node.js</div>
+        <div class="rem-step-desc">Baixe e instale o Node.js LTS em <strong>nodejs.org</strong> — necessário para rodar o Remotion.</div>
+      </div>
+    </div>
+    <div class="rem-step">
+      <div class="rem-step-num">2</div>
+      <div class="rem-step-body">
+        <div class="rem-step-title">Criar projeto Remotion</div>
+        <div class="rem-step-desc">Abra o terminal (CMD ou PowerShell) e rode:</div>
+        <div class="rem-code-block" id="rem-cmd-create">npx create-video@latest<button class="rem-copy-btn" onclick="remCopy('npx create-video@latest',this)">📋</button></div>
+        <div class="rem-step-desc" style="margin-top:8px">Escolha o template <strong>Hello World</strong> quando perguntar.</div>
+      </div>
+    </div>
+    <div class="rem-step">
+      <div class="rem-step-num">3</div>
+      <div class="rem-step-body">
+        <div class="rem-step-title">Substituir o arquivo gerado</div>
+        <div class="rem-step-desc">Cole o código gerado aqui no arquivo indicado dentro da pasta <code style="font-family:var(--font-mono);background:var(--dim);padding:1px 5px;border-radius:3px">src/</code> do seu projeto.</div>
+      </div>
+    </div>
+    <div class="rem-step">
+      <div class="rem-step-num">4</div>
+      <div class="rem-step-body">
+        <div class="rem-step-title">Visualizar e exportar</div>
+        <div class="rem-step-desc">No terminal, dentro da pasta do projeto:</div>
+        <div class="rem-code-block">npm run dev   <span style="color:var(--muted)"># abre o studio no browser</span>
+<button class="rem-copy-btn" onclick="remCopy('npm run dev',this)" style="top:8px">📋</button></div>
+        <div class="rem-code-block" style="margin-top:6px">npx remotion render   <span style="color:var(--muted)"># exporta o MP4</span>
+<button class="rem-copy-btn" onclick="remCopy('npx remotion render',this)" style="top:8px">📋</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Presets -->
+  <div class="lbl" style="margin-bottom:12px">Tipo de composição</div>
+  <div class="rem-preset-grid">
+    <div class="rem-preset active" id="rem-pre-intro" onclick="remSelectPreset('intro',this)">
+      <div class="rem-preset-icon">🎬</div>
+      <div class="rem-preset-name">Intro / Abertura</div>
+      <div class="rem-preset-desc">Logo, título animado</div>
+    </div>
+    <div class="rem-preset" id="rem-pre-texto" onclick="remSelectPreset('texto',this)">
+      <div class="rem-preset-icon">✍️</div>
+      <div class="rem-preset-name">Texto Animado</div>
+      <div class="rem-preset-desc">Legendas, títulos, captions</div>
+    </div>
+    <div class="rem-preset" id="rem-pre-transicao" onclick="remSelectPreset('transicao',this)">
+      <div class="rem-preset-icon">🔀</div>
+      <div class="rem-preset-name">Transição</div>
+      <div class="rem-preset-desc">Entre cenas e clipes</div>
+    </div>
+    <div class="rem-preset" id="rem-pre-lower" onclick="remSelectPreset('lower',this)">
+      <div class="rem-preset-icon">📺</div>
+      <div class="rem-preset-name">Lower Third</div>
+      <div class="rem-preset-desc">Nome, cargo, legenda</div>
+    </div>
+    <div class="rem-preset" id="rem-pre-countdown" onclick="remSelectPreset('countdown',this)">
+      <div class="rem-preset-icon">⏱️</div>
+      <div class="rem-preset-name">Countdown</div>
+      <div class="rem-preset-desc">Contagem regressiva</div>
+    </div>
+    <div class="rem-preset" id="rem-pre-custom" onclick="remSelectPreset('custom',this)">
+      <div class="rem-preset-icon">✨</div>
+      <div class="rem-preset-name">Livre</div>
+      <div class="rem-preset-desc">Descreva qualquer coisa</div>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="field">
+    <div class="lbl">Descreva o que você quer</div>
+    <textarea id="rem-desc" rows="4" placeholder="Ex: intro de 3 segundos com o logo Rosu Studio aparecendo no centro com fade in e o texto &#34;by Lucas&#34; surgindo abaixo em letra fina..."></textarea>
+  </div>
+
+  <div class="grid2">
+    <div class="field" style="margin-bottom:0">
+      <div class="lbl">Duração (segundos)</div>
+      <input type="number" id="rem-dur" value="5" min="1" max="60" style="width:100%"/>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <div class="lbl">Resolução / formato</div>
+      <select id="rem-res">
+        <option value="1920x1080">1920×1080 — YouTube / Horizontal</option>
+        <option value="1080x1920">1080×1920 — Reels / Vertical</option>
+        <option value="1080x1080">1080×1080 — Quadrado</option>
+        <option value="2560x1440">2560×1440 — 2K</option>
+        <option value="3840x2160">3840×2160 — 4K</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="field" style="margin-top:14px;margin-bottom:0">
+    <div class="lbl">Paleta de cores</div>
+    <input type="text" id="rem-cores" placeholder="Ex: fundo preto, texto branco, destaque vermelho #CC1F1F..."/>
+  </div>
+
+  <div style="height:20px"></div>
+  <button class="btn" id="rem-btn" onclick="runRemotion()">⚛️ Gerar código Remotion →</button>
+
+  <!-- Output -->
+  <div id="rem-out" style="margin-top:22px"></div>
 </div>
 
 <!-- ── COPY SOCIAL ── -->
@@ -2697,6 +2858,429 @@ document.addEventListener('DOMContentLoaded', () => {
 // Close modal on overlay click
 document.getElementById('key-modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeKeyModal();
+});
+
+// ── REMOTION ─────────────────────────────────────────────────────────────────
+let remPreset = 'intro';
+
+function remToggleSetup() {
+  const el = document.getElementById('rem-setup');
+  const btn = document.getElementById('rem-setup-toggle').querySelector('button');
+  const open = el.style.display === 'block';
+  el.style.display = open ? 'none' : 'block';
+  btn.textContent = open ? '📦 Como instalar o Remotion — ver guia' : '📦 Fechar guia';
+}
+
+function remSelectPreset(id, el) {
+  remPreset = id;
+  document.querySelectorAll('.rem-preset').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  const placeholders = {
+    intro:     'Ex: intro de 3s com o logo "ROSU" aparecendo com fade in, texto "Studio" surgindo abaixo em fonte fina, fundo preto...',
+    texto:     'Ex: legenda animada que aparece palavra por palavra no estilo typewriter, texto branco com sombra, posição inferior...',
+    transicao: 'Ex: transição de slide para esquerda de 0.5s entre duas cenas, com leve blur durante o movimento...',
+    lower:     'Ex: lower third com nome "Lucas Rosu" em negrito e "Videomaker" abaixo em fino, entra pela esquerda com spring...',
+    countdown: 'Ex: contagem de 5 a 0, número grande centralizado, cada número com um zoom in rápido, cor vermelha...',
+    custom:    'Descreva livremente o que você quer — qualquer animação, efeito ou composição...',
+  };
+  document.getElementById('rem-desc').placeholder = placeholders[id] || '';
+}
+
+function remCopy(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓';
+    setTimeout(() => btn.textContent = orig, 1500);
+  });
+}
+
+async function runRemotion() {
+  const desc  = document.getElementById('rem-desc').value.trim();
+  if (!desc) { alert('Descreva o que você quer criar.'); return; }
+
+  const dur   = document.getElementById('rem-dur').value;
+  const res   = document.getElementById('rem-res').value;
+  const cores = document.getElementById('rem-cores').value.trim();
+  const [w, h] = res.split('x');
+  const fps   = 30;
+  const frames = parseInt(dur) * fps;
+
+  const presetNames = { intro:'Intro/Abertura', texto:'Texto Animado', transicao:'Transição', lower:'Lower Third', countdown:'Countdown', custom:'Composição livre' };
+
+  const prompt = `Você é especialista em Remotion (framework React para vídeo programático).
+
+Gere um arquivo Remotion completo e funcional baseado no pedido abaixo.
+
+PEDIDO: ${desc}
+TIPO: ${presetNames[remPreset]}
+DURAÇÃO: ${dur} segundos (${frames} frames a ${fps}fps)
+RESOLUÇÃO: ${w}x${h}px
+PALETA DE CORES: ${cores || 'livre, use bom senso criativo'}
+
+REGRAS OBRIGATÓRIAS:
+- Use Remotion v4+ com imports corretos: import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring, Sequence, Audio, Img } from 'remotion'
+- O componente principal deve se chamar MyComposition
+- Registre a composição com registerRoot() e <Composition> corretamente
+- Use interpolate() e spring() para todas as animações — NUNCA CSS transitions/animations
+- Resolução: width={${w}} height={${h}} em <Composition>
+- durationInFrames={${frames}} fps={${fps}}
+- Coloque TODO o código em um único arquivo: src/MyComposition.tsx (ou .jsx)
+- Inclua o conteúdo do src/index.ts/Root.tsx necessário para registrar
+- O código deve rodar SEM erros com npx create-video@latest (template Hello World)
+- Comente o código em português para facilitar edição
+- Use styled-components inline (style={{}}) ou CSS-in-JS — sem arquivos CSS externos
+${cores ? `- Paleta obrigatória: ${cores}` : ''}
+
+ENTREGUE no formato:
+1. Arquivo: src/MyComposition.tsx — código completo
+2. Arquivo: src/Root.tsx — registro da composição
+3. Comando para rodar: npx remotion studio
+4. Breve explicação das animações criadas (em português, máx 3 linhas)
+
+Escreva o código completo, sem omitir nenhuma parte.`;
+
+  const btn = document.getElementById('rem-btn');
+  btn.disabled = true; btn.textContent = '⏳ Gerando código...';
+
+  const result = await ai(prompt);
+  renderRemotionResult(result, desc, dur, res);
+
+  btn.disabled = false; btn.textContent = '⚛️ Gerar código Remotion →';
+}
+
+function renderRemotionResult(text, desc, dur, res) {
+  const el = document.getElementById('rem-out');
+  if (!text || text.startsWith('⚠')) { renderOut('rem-out', text); return; }
+
+  // Extract code blocks
+  const files = [];
+  const fileRegex = /(?:Arquivo:|File:)\s*([^\n]+)\n```(?:tsx?|jsx?|typescript|javascript)?\n([\s\S]*?)```/gi;
+  let match;
+  while ((match = fileRegex.exec(text)) !== null) {
+    files.push({ name: match[1].trim(), code: match[2].trim() });
+  }
+  if (files.length === 0) {
+    const codeRegex = /```(?:tsx?|jsx?|typescript|javascript)\n([\s\S]*?)```/gi;
+    let i = 0;
+    const names = ['src/MyComposition.tsx', 'src/Root.tsx'];
+    while ((match = codeRegex.exec(text)) !== null) {
+      files.push({ name: names[i] || `arquivo-${i+1}.tsx`, code: match[1].trim() });
+      i++;
+    }
+  }
+  if (files.length === 0) {
+    files.push({ name: 'src/MyComposition.tsx', code: text });
+  }
+
+  const explanation = text.replace(/```[\s\S]*?```/g, '').replace(/(?:Arquivo:|File:)[^\n]*/g,'').replace(/\n{3,}/g,'\n\n').trim();
+
+  // ── Generate .bat content ──────────────────────────────────────────────
+  // Uses PowerShell embedded in bat to safely write multi-line files
+  const projName = 'rosu-remotion';
+
+  // Build PowerShell heredoc lines for each file
+  function escPS(str) {
+    return str
+      .replace(/`/g, '``')
+      .replace(/"/g, '`"')
+      .replace(/\$/g, '`$')
+      .replace(/\r?\n/g, '\r\n');
+  }
+
+  let psWriteFiles = files.map(f => {
+    const safeName = f.name.replace(/\//g, '\\');
+    const escaped = escPS(f.code);
+    return `Set-Content -Path "${projName}\\${safeName}" -Value @"\r\n${escaped}\r\n"@ -Encoding UTF8`;
+  }).join('\r\n');
+
+  const batContent = `@echo off
+chcp 65001 > nul
+title Rosu Studio — Remotion Auto Setup
+color 0A
+echo.
+echo  ██████╗  ██████╗ ███████╗██╗   ██╗
+echo  ██╔══██╗██╔═══██╗██╔════╝██║   ██║
+echo  ██████╔╝██║   ██║███████╗██║   ██║
+echo  ██╔══██╗██║   ██║╚════██║██║   ██║
+echo  ██║  ██║╚██████╔╝███████║╚██████╔╝
+echo  ╚═╝  ╚═╝ ╚═════╝ ╚══════╝ ╚═════╝
+echo.
+echo  Remotion Auto Setup — ${escHtml(presetNames[remPreset]||'Custom')} · ${dur}s
+echo  ================================================
+echo.
+
+:: Verifica Node.js
+node --version > nul 2>&1
+if errorlevel 1 (
+  echo  [ERRO] Node.js nao encontrado!
+  echo  Baixe em: https://nodejs.org
+  pause
+  exit /b 1
+)
+
+echo  [1/4] Criando projeto Remotion...
+call npx create-video@latest ${projName} --yes --template hello-world 2>&1
+if errorlevel 1 (
+  echo.
+  echo  Tentando sem --yes...
+  call npx create-video@latest ${projName} --template hello-world
+)
+
+echo.
+echo  [2/4] Copiando arquivos gerados pelo hub...
+powershell -NoProfile -ExecutionPolicy Bypass -Command "${psWriteFiles}"
+
+echo.
+echo  [3/4] Instalando dependencias...
+cd ${projName}
+call npm install
+
+echo.
+echo  [4/4] Abrindo Remotion Studio no navegador...
+echo.
+echo  ================================================
+echo   Quando abrir o browser, clique em RENDER
+echo   para exportar o MP4 final!
+echo  ================================================
+echo.
+call npx remotion studio
+pause`;
+
+  // Store bat for download
+  window._remotionBat = batContent;
+  window._remotionFiles = files;
+
+  // ── Build HTML ──
+  let html = `<div>
+    <!-- DESTAQUE: Botão .bat -->
+    <div style="background:linear-gradient(135deg,rgba(204,31,31,0.12),rgba(204,31,31,0.04));border:1.5px solid var(--acc-br);border-radius:12px;padding:18px 20px;margin-bottom:20px">
+      <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;font-family:var(--font-display)">⚡ Tudo pronto — só dar dois cliques</div>
+      <div style="font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:14px">Baixe o arquivo abaixo, coloque em qualquer pasta e dê dois cliques. Ele instala tudo, cola o código e abre o Remotion Studio automaticamente.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" onclick="remDownloadBat()" style="font-size:13px;padding:11px 22px">⬇ Baixar RODAR_REMOTION.bat</button>
+        <button class="btn-ghost" onclick="remDownloadPs()" style="font-size:12px">⬇ .ps1 (alternativo)</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">
+        💡 Se der erro de "não reconhecido como comando", clique com botão direito no .bat → <strong>Executar como administrador</strong>
+      </div>
+    </div>`;
+
+  if (explanation) {
+    html += `<div class="tip blue" style="margin-bottom:14px;font-size:12.5px">${escHtml(explanation).replace(/\n/g,'<br>')}</div>`;
+  }
+
+  // Files (collapsible)
+  html += `<div style="margin-bottom:4px"><div class="lbl" style="margin-bottom:10px">Código gerado (para quem quiser ver)</div>`;
+  files.forEach(f => {
+    const id = 'rem-code-' + Math.random().toString(36).slice(2);
+    html += `
+      <div class="rem-file-card" style="margin-bottom:8px">
+        <div class="rem-file-head">
+          <span class="rem-file-name">📄 ${escHtml(f.name)}</span>
+          <button class="btn-ghost" onclick="remCopyCode('${id}',this)" style="font-size:11px">📋 Copiar</button>
+        </div>
+        <pre class="rem-file-code" id="${id}">${escHtml(f.code)}</pre>
+      </div>`;
+  });
+  html += `</div></div>`;
+
+  el.innerHTML = html;
+}
+
+function remDownloadBat() {
+  if (!window._remotionBat) return;
+  const blob = new Blob([window._remotionBat], { type: 'application/octet-stream' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'RODAR_REMOTION.bat';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+
+function remDownloadPs() {
+  if (!window._remotionFiles) return;
+  const projName = 'rosu-remotion';
+  let ps = `# Remotion Auto Setup — gerado pelo Rosu Studio Hub\r\n`;
+  ps += `Write-Host "Criando projeto Remotion..." -ForegroundColor Green\r\n`;
+  ps += `npx create-video@latest ${projName} --yes --template hello-world\r\n\r\n`;
+  ps += `Write-Host "Copiando arquivos..." -ForegroundColor Green\r\n`;
+  window._remotionFiles.forEach(f => {
+    const safePath = `${projName}\\${f.name.replace(/\//g,'\\')}`;
+    ps += `Set-Content -Path "${safePath}" -Value @'\r\n${f.code}\r\n'@ -Encoding UTF8\r\n`;
+  });
+  ps += `\r\nWrite-Host "Instalando dependências..." -ForegroundColor Green\r\n`;
+  ps += `cd ${projName}; npm install\r\n`;
+  ps += `\r\nWrite-Host "Abrindo Remotion Studio..." -ForegroundColor Cyan\r\n`;
+  ps += `npx remotion studio\r\n`;
+
+  const blob = new Blob([ps], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'RODAR_REMOTION.ps1';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+
+const presetNames = { intro:'Intro/Abertura', texto:'Texto Animado', transicao:'Transição', lower:'Lower Third', countdown:'Countdown', custom:'Composição livre' };
+
+function remCopyCode(id, btn) {
+  const code = document.getElementById(id)?.textContent || '';
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '✓ Copiado!';
+    setTimeout(() => btn.textContent = '📋 Copiar', 1800);
+  });
+}
+
+// ── SPEECH TO TEXT ────────────────────────────────────────────────────────────
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let micActive = null; // button currently recording
+
+const MIC_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="9" y="2" width="6" height="12" rx="3" fill="currentColor"/>
+  <path d="M5 11a7 7 0 0 0 14 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+  <line x1="12" y1="18" x2="12" y2="22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="8" y1="22" x2="16" y2="22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+</svg>`;
+
+const MIC_SVG_ON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="9" y="2" width="6" height="12" rx="3" fill="#CC1F1F"/>
+  <path d="M5 11a7 7 0 0 0 14 0" stroke="#CC1F1F" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+  <line x1="12" y1="18" x2="12" y2="22" stroke="#CC1F1F" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="8" y1="22" x2="16" y2="22" stroke="#CC1F1F" stroke-width="1.8" stroke-linecap="round"/>
+</svg>`;
+
+function injectMicButtons() {
+  if (!SpeechRecognition) return; // silently skip — no Web Speech API
+
+  const selector = 'input[type=text]:not([data-mic]),input[type=email]:not([data-mic]),input[type=password]:not([data-mic]),textarea:not([data-mic])';
+  document.querySelectorAll(selector).forEach(el => {
+    // Skip hidden or inside existing mic-wrap
+    if (el.closest('.mic-wrap') || el.closest('.nb-key-row') || el.id === 'key-input') return;
+
+    el.setAttribute('data-mic', '1');
+
+    // Wrap
+    const wrap = document.createElement('div');
+    wrap.className = 'mic-wrap';
+    el.parentNode.insertBefore(wrap, el);
+    wrap.appendChild(el);
+
+    // Mic button
+    const btn = document.createElement('button');
+    btn.className = 'mic-btn';
+    btn.type = 'button';
+    btn.innerHTML = MIC_SVG;
+    btn.title = 'Clique e fale';
+    btn.setAttribute('aria-label', 'Ativar microfone');
+    wrap.appendChild(btn);
+
+    // Tooltip
+    const tip = document.createElement('span');
+    tip.className = 'mic-tooltip';
+    tip.textContent = 'Clique e fale';
+    wrap.appendChild(tip);
+
+    btn.addEventListener('click', () => startMic(el, btn, tip));
+  });
+}
+
+function startMic(input, btn, tip) {
+  // Stop any active recording first
+  if (micActive && micActive !== btn) {
+    micActive._recognition && micActive._recognition.stop();
+    micActive.classList.remove('listening');
+    micActive.innerHTML = MIC_SVG;
+    micActive._tip && (micActive._tip.textContent = 'Clique e fale');
+  }
+
+  // Toggle off if same button
+  if (btn.classList.contains('listening')) {
+    btn._recognition && btn._recognition.stop();
+    btn.classList.remove('listening');
+    btn.innerHTML = MIC_SVG;
+    tip.textContent = 'Clique e fale';
+    micActive = null;
+    return;
+  }
+
+  const rec = new SpeechRecognition();
+  rec.lang = 'pt-BR';
+  rec.continuous = true;
+  rec.interimResults = true;
+
+  btn._recognition = rec;
+  btn._tip = tip;
+  btn.classList.add('listening');
+  btn.innerHTML = MIC_SVG_ON;
+  tip.textContent = '🔴 Ouvindo...';
+  micActive = btn;
+
+  const isTextarea = input.tagName === 'TEXTAREA';
+  let baseValue = input.value; // keep existing text
+  let interim = '';
+
+  rec.onresult = (e) => {
+    let finalChunk = '';
+    interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) {
+        finalChunk += t;
+      } else {
+        interim += t;
+      }
+    }
+    if (finalChunk) {
+      // Append final with space if needed
+      const sep = baseValue && !baseValue.endsWith(' ') && !baseValue.endsWith('\n') ? ' ' : '';
+      baseValue = baseValue + sep + finalChunk;
+    }
+    input.value = baseValue + (interim ? ' ' + interim : '');
+    // Trigger input event so pjUpdate etc. react
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    // Auto-resize textarea
+    if (isTextarea) { input.style.height = 'auto'; input.style.height = input.scrollHeight + 'px'; }
+  };
+
+  rec.onerror = (e) => {
+    if (e.error === 'not-allowed') {
+      tip.textContent = '⚠ Permita o microfone';
+      setTimeout(() => {
+        btn.classList.remove('listening');
+        btn.innerHTML = MIC_SVG;
+        tip.textContent = 'Clique e fale';
+        micActive = null;
+      }, 2000);
+    }
+  };
+
+  rec.onend = () => {
+    if (btn.classList.contains('listening')) {
+      // Auto-restart if still active (continuous mode)
+      try { rec.start(); } catch(e) {
+        btn.classList.remove('listening');
+        btn.innerHTML = MIC_SVG;
+        tip.textContent = 'Clique e fale';
+        micActive = null;
+      }
+    }
+  };
+
+  try {
+    rec.start();
+  } catch(e) {
+    btn.classList.remove('listening');
+    tip.textContent = 'Erro ao iniciar';
+  }
+}
+
+// Run on load + observe DOM for new inputs (tabs switching)
+document.addEventListener('DOMContentLoaded', () => {
+  injectMicButtons();
+  // Re-inject when tabs open (MutationObserver on main content)
+  const observer = new MutationObserver(() => injectMicButtons());
+  const main = document.getElementById('main');
+  if (main) observer.observe(main, { childList: true, subtree: true });
 });
 
 buildChecklist();

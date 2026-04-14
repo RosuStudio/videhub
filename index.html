@@ -343,12 +343,12 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
 <!-- ── API KEY MODAL ── -->
 <div id="key-modal-overlay" style="display:none">
   <div id="key-modal">
-    <h3>🔑 Chave da API Anthropic</h3>
-    <p>Para usar as ferramentas com IA você precisa de uma chave de API. É grátis para começar.<br>
-    Acesse <code>console.anthropic.com</code> → API Keys → Create Key.</p>
+    <h3>🔑 Chave da API Google</h3>
+    <p>Uma única chave do Google para todas as ferramentas — IA de texto, análise de imagem e geração de imagem.<br>
+    Acesse <code>aistudio.google.com</code> → Get API Key → crie ou selecione um projeto.</p>
     <div id="key-status-ok" class="key-status-ok">✓ Chave configurada e salva</div>
     <div class="key-modal-row">
-      <input type="password" id="key-input" placeholder="sk-ant-..." autocomplete="off"/>
+      <input type="password" id="key-input" placeholder="AIza..." autocomplete="off"/>
       <button class="btn" onclick="saveApiKey()" style="white-space:nowrap;padding:11px 18px">Salvar</button>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
@@ -1436,27 +1436,24 @@ function nav(id, btn) {
 
 // ── Claude API ───────────────────────────────────────────────────────────────
 async function ai(prompt) {
-  const key = localStorage.getItem('anthropic_key') || '';
+  const key = localStorage.getItem('google_api_key') || '';
   if (!key) {
     showKeySetup();
-    return '⚠ Configure sua chave da API Anthropic primeiro (botão ⚙️ no canto superior direito).';
+    return '⚠ Configure sua chave da API Google primeiro (botão ⚙️ no canto inferior direito).';
   }
   try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1800,
-        messages: [{ role: 'user', content: prompt }] })
-    });
+    const r = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      }
+    );
     const d = await r.json();
     if (d.error) return '⚠ Erro: ' + d.error.message;
-    return d.content.map(b => b.text || '').join('');
-  } catch (e) { return '⚠ Erro de conexão: ' + e.message; }
+    return d.candidates?.[0]?.content?.parts?.[0]?.text || '⚠ Resposta vazia.';
+  } catch(e) { return '⚠ Erro de conexão: ' + e.message; }
 }
 
 // ── Shared render ────────────────────────────────────────────────────────────
@@ -1758,29 +1755,25 @@ async function runLutFoto() {
 
 // ── AI VISION HELPER ─────────────────────────────────────────────────────────
 async function aiVision(base64, prompt) {
-  const key = localStorage.getItem('anthropic_key') || '';
+  const key = localStorage.getItem('google_api_key') || '';
   if (!key) { showKeySetup(); return null; }
   try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 500,
-        messages: [{ role: 'user', content: [
-          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
-          { type: 'text', text: prompt }
-        ]}]
-      })
-    });
+    const r = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [
+            { inline_data: { mime_type: 'image/jpeg', data: base64 } },
+            { text: prompt }
+          ]}]
+        })
+      }
+    );
     const d = await r.json();
     if (d.error) return null;
-    const text = d.content.map(b => b.text || '').join('').trim();
+    const text = d.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
     const match = text.match(/\{[\s\S]*\}/);
     return match ? JSON.parse(match[0]) : null;
   } catch(e) { return null; }
@@ -2187,7 +2180,7 @@ let nbRatio = '16:9';
 const nbSession = []; // imagens desta sessão
 
 function initNB() {
-  const key = localStorage.getItem('nb_apikey');
+  const key = localStorage.getItem('google_api_key') || localStorage.getItem('nb_apikey');
   if (key) {
     document.getElementById('nb-setup-box').style.display = 'none';
     document.getElementById('nb-key-ok').style.display = 'flex';
@@ -2196,15 +2189,22 @@ function initNB() {
 function saveNBKey() {
   const k = document.getElementById('nb-apikey').value.trim();
   if (!k) { alert('Cole a chave antes de salvar.'); return; }
+  localStorage.setItem('google_api_key', k);
   localStorage.setItem('nb_apikey', k);
   document.getElementById('nb-setup-box').style.display = 'none';
   document.getElementById('nb-key-ok').style.display = 'flex';
+  // Update main key button
+  document.getElementById('api-cfg-btn').classList.add('key-ok');
+  document.getElementById('api-cfg-btn').textContent = '✓';
 }
 function changeNBKey() {
   localStorage.removeItem('nb_apikey');
+  localStorage.removeItem('google_api_key');
   document.getElementById('nb-apikey').value = '';
   document.getElementById('nb-key-ok').style.display = 'none';
   document.getElementById('nb-setup-box').style.display = 'block';
+  document.getElementById('api-cfg-btn').classList.remove('key-ok');
+  document.getElementById('api-cfg-btn').textContent = '⚙️';
 }
 function setNBRatio(r, btn) {
   nbRatio = r;
@@ -2213,8 +2213,8 @@ function setNBRatio(r, btn) {
 }
 
 async function runNanoBanana() {
-  const key = localStorage.getItem('nb_apikey');
-  if (!key) { alert('Configure sua chave do Google AI Studio primeiro.'); return; }
+  const key = localStorage.getItem('google_api_key') || localStorage.getItem('nb_apikey');
+  if (!key) { showKeySetup(); return; }
   const prompt = document.getElementById('nb-prompt').value.trim();
   if (!prompt) { alert('Digite o prompt da imagem.'); return; }
   const style = document.getElementById('nb-style').value.trim();
@@ -2706,7 +2706,7 @@ async function uploadToDrive(file, folderId) {
 
 // ── ROSU — DRIVE FOLDER ──────────────────────────────────────────────────────
 const ROSU_FOLDER_ID = '1oAwK8SN-E-14hwwSmCoCpkQO3BBVWZvM';
-let rosuApiKey = localStorage.getItem('rosu_api_key') || '';
+let rosuApiKey = localStorage.getItem('google_api_key') || localStorage.getItem('rosu_api_key') || '';
 let rosuFolderStack = [{ id: ROSU_FOLDER_ID, name: 'Rosu' }];
 
 function rosuToggleSetup() {
@@ -2718,8 +2718,12 @@ function rosuSalvarKey() {
   const key = document.getElementById('rosu-api-key').value.trim();
   if (!key) { alert('Cole a API Key primeiro.'); return; }
   rosuApiKey = key;
+  localStorage.setItem('google_api_key', key);
   localStorage.setItem('rosu_api_key', key);
+  localStorage.setItem('nb_apikey', key);
   document.getElementById('rosu-setup').style.display = 'none';
+  document.getElementById('api-cfg-btn').classList.add('key-ok');
+  document.getElementById('api-cfg-btn').textContent = '✓';
   rosuLoad();
 }
 
@@ -2826,7 +2830,7 @@ async function rosuDownload(id, name) {
 function showKeySetup() {
   const overlay = document.getElementById('key-modal-overlay');
   overlay.style.display = 'flex';
-  const existing = localStorage.getItem('anthropic_key') || '';
+  const existing = localStorage.getItem('google_api_key') || '';
   if (existing) {
     document.getElementById('key-input').value = existing;
     document.getElementById('key-status-ok').style.display = 'block';
@@ -2839,8 +2843,11 @@ function closeKeyModal() {
 
 function saveApiKey() {
   const key = document.getElementById('key-input').value.trim();
-  if (!key || !key.startsWith('sk-')) { alert('Cole uma chave válida (começa com sk-).'); return; }
-  localStorage.setItem('anthropic_key', key);
+  if (!key || !key.startsWith('AIza')) { alert('Cole uma chave válida do Google (começa com AIza).'); return; }
+  localStorage.setItem('google_api_key', key);
+  // Sync all other key storages to the same key
+  localStorage.setItem('nb_apikey', key);
+  localStorage.setItem('rosu_api_key', key);
   document.getElementById('key-status-ok').style.display = 'block';
   document.getElementById('api-cfg-btn').classList.add('key-ok');
   document.getElementById('api-cfg-btn').textContent = '✓';
@@ -2849,7 +2856,7 @@ function saveApiKey() {
 
 // On load: update button if key already saved
 document.addEventListener('DOMContentLoaded', () => {
-  if (localStorage.getItem('anthropic_key')) {
+  if (localStorage.getItem('google_api_key')) {
     document.getElementById('api-cfg-btn').classList.add('key-ok');
     document.getElementById('api-cfg-btn').textContent = '✓';
   }

@@ -229,6 +229,8 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
 .prompt-box{background:var(--dim);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin:14px 16px 6px;font-size:14px;line-height:1.88;color:var(--text2);white-space:pre-wrap;font-family:var(--font-body)}
 .prompt-actions{display:flex;gap:8px;padding:0 16px 14px}
 .prompt-tip{font-size:11.5px;color:var(--muted);padding:0 16px 14px;line-height:1.6}
+.pj-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.03)}
+.pj-section-title{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;font-family:var(--font-mono)}
 
 /* ── ROTEIRO CARD ── */
 .rot-card{margin-top:22px;border:1px solid var(--border2);border-radius:10px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,0.03)}
@@ -278,6 +280,21 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
 .key-modal-row input{flex:1;background:var(--dim);border:1px solid var(--border2);border-radius:8px;padding:11px 14px;color:var(--text);font-size:13px;outline:none;font-family:var(--font-mono);letter-spacing:.02em}
 .key-modal-row input:focus{border-color:rgba(204,31,31,0.45);box-shadow:0 0 0 3px rgba(204,31,31,0.07)}
 .key-status-ok{font-size:12px;color:var(--green);font-family:var(--font-mono);padding:8px 12px;background:var(--gr-bg);border:1px solid var(--gr-br);border-radius:7px;margin-bottom:14px;display:none}
+/* LUT modes */
+.lut-mode-btn{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted);font-family:var(--font-body);transition:all .15s}
+.lut-mode-btn:hover{background:var(--card2);color:var(--text2);border-color:var(--border3)}
+.lut-mode-btn.active{background:var(--acc-bg);border-color:var(--acc-br);color:#e06060}
+.lut-dl-card{background:var(--card);border:1px solid var(--border2);border-radius:12px;overflow:hidden;margin-top:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.04)}
+.lut-dl-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.lut-dl-title{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--text)}
+.lut-dl-sub{font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:2px}
+.lut-dl-body{padding:16px 18px}
+.lut-params-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.lut-param{background:var(--dim);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.lut-param-val{font-size:15px;font-weight:800;color:var(--text);font-family:var(--font-display)}
+.lut-param-label{font-size:9.5px;color:var(--muted);margin-top:3px;letter-spacing:.06em;text-transform:uppercase;font-family:var(--font-mono)}
+.lut-dl-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:linear-gradient(135deg,#CC1F1F,#a81616);color:#fff;border:none;border-radius:8px;padding:13px 20px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:all .18s;box-shadow:0 2px 14px rgba(204,31,31,0.25);letter-spacing:.01em}
+.lut-dl-btn:hover{transform:translateY(-1px);box-shadow:0 4px 22px rgba(204,31,31,0.38)}
 #api-cfg-btn{position:fixed;bottom:20px;right:20px;background:var(--card2);border:1px solid var(--border2);border-radius:50%;width:38px;height:38px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:99;transition:all .18s;box-shadow:0 4px 16px rgba(0,0,0,0.4)}
 #api-cfg-btn:hover{background:var(--acc-bg);border-color:var(--acc-br);transform:scale(1.08)}
 #api-cfg-btn.key-ok{border-color:var(--gr-br);background:var(--gr-bg)}
@@ -517,15 +534,51 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
 <div id="tab-lut" class="tab-pane">
   <div class="tab-header">
     <h2><span>🎨</span> LUT & Cor</h2>
-    <p>Descreva o estilo visual e receba recomendação de LUT com passo a passo para aplicar no CapCut Pro.</p>
+    <p>Arraste o vídeo que vai receber o LUT, descreva o estilo que você quer — a IA analisa as cores atuais e gera o arquivo <code style="font-family:var(--font-mono);font-size:12px;background:var(--dim);padding:2px 7px;border-radius:4px">.cube</code> pronto para o CapCut Pro.</p>
   </div>
   <div class="sep"></div>
-  <div class="field"><div class="lbl">Estilo visual que você quer</div>
-    <input type="text" id="l-estilo" placeholder="Ex: cinematográfico escuro, clean e minimalista, tons quentes vintage..."/></div>
+
+  <!-- STEP 1: Video drop -->
+  <div class="lbl" style="margin-bottom:10px">① Vídeo que vai receber o LUT <span style="color:var(--border3);font-weight:400;text-transform:none;letter-spacing:0">(opcional — melhora muito a precisão)</span></div>
+  <div id="lut-vid-dz" class="drop-zone"
+    ondragover="event.preventDefault();this.classList.add('drag')"
+    ondragleave="this.classList.remove('drag')"
+    ondrop="lutVidDrop(event)"
+    onclick="document.getElementById('lut-vid-input').click()">
+    <div class="dz-icon">🎬</div>
+    <div class="dz-text">Arraste o vídeo aqui ou clique para escolher</div>
+    <div class="dz-sub">MP4, MOV, AVI — do iPhone ou qualquer câmera</div>
+    <input type="file" id="lut-vid-input" accept="video/*" style="display:none" onchange="lutVidSelect(this.files[0])">
+  </div>
+  <canvas id="lut-canvas" style="display:none"></canvas>
+
+  <!-- Video preview + remove -->
+  <div id="lut-vid-preview" style="display:none;margin-bottom:22px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="lbl" style="margin:0">Frame extraído para análise</div>
+      <button class="btn-ghost" onclick="lutVidRemove()" style="font-size:12px">✕ Remover vídeo</button>
+    </div>
+    <img id="lut-frame-img" style="max-width:100%;max-height:200px;border-radius:10px;border:1px solid var(--border2);display:block;box-shadow:0 4px 20px rgba(0,0,0,0.4)"/>
+    <div id="lut-frame-colors" style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap"></div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- STEP 2: Style description -->
+  <div class="lbl" style="margin-bottom:10px">② Como você quer que fique</div>
+
+  <div class="field">
+    <div class="lbl">Estilo visual desejado</div>
+    <input type="text" id="l-estilo" placeholder="Ex: cinematográfico escuro com tons frios e sombras azuladas, clean minimalista..."/>
+  </div>
+
   <div class="grid2">
-    <div class="field" style="margin-bottom:0"><div class="lbl">Referência (canal, filme, criador)</div>
-      <input type="text" id="l-ref" placeholder="Ex: Peter McKinnon, Stranger Things..."/></div>
-    <div class="field" style="margin-bottom:0"><div class="lbl">Ambiente de gravação</div>
+    <div class="field" style="margin-bottom:0">
+      <div class="lbl">Referência (canal, filme, criador)</div>
+      <input type="text" id="l-ref" placeholder="Ex: Peter McKinnon, Euphoria, Zack Snyder..."/>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <div class="lbl">Ambiente de gravação</div>
       <select id="l-amb">
         <option>Interno com luz natural</option>
         <option>Interno com luz artificial</option>
@@ -533,11 +586,49 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
         <option>Externo dia nublado</option>
         <option>Externo noite / pouca luz</option>
         <option>Studio com luz controlada</option>
-      </select></div>
+      </select>
+    </div>
   </div>
-  <div style="height:15px"></div>
-  <button class="btn" id="l-btn" onclick="runLUT()">Recomendar LUT →</button>
+
+  <div style="height:20px"></div>
+  <button class="btn" id="l-btn" onclick="runLUT()">🎨 Gerar LUT →</button>
   <div id="l-out"></div>
+
+  <div class="sep" style="margin-top:30px"></div>
+
+  <!-- SECONDARY: Copy look from photo -->
+  <div style="margin-top:4px">
+    <div class="lbl" style="margin-bottom:12px">③ Ou copiar o look de uma foto de referência</div>
+    <div id="lut-foto-dz" class="drop-zone"
+      ondragover="event.preventDefault();this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')"
+      ondrop="lutFotoDrop(event)"
+      onclick="document.getElementById('lut-foto-input').click()">
+      <div class="dz-icon">📷</div>
+      <div class="dz-text">Arraste uma foto com o look que você quer replicar</div>
+      <div class="dz-sub">JPG, PNG, HEIC, WEBP</div>
+      <input type="file" id="lut-foto-input" accept="image/*" style="display:none" onchange="lutFotoSelect(this.files[0])">
+    </div>
+    <div id="lut-foto-preview" style="display:none;margin-bottom:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="lbl" style="margin:0">Foto de referência</div>
+        <button class="btn-ghost" onclick="lutFotoRemove()" style="font-size:12px">✕ Remover foto</button>
+      </div>
+      <img id="lut-foto-img" style="max-width:100%;max-height:220px;border-radius:10px;border:1px solid var(--border2);display:block;box-shadow:0 4px 20px rgba(0,0,0,0.4)"/>
+    </div>
+    <div id="lut-foto-controls" style="display:none;margin-bottom:16px">
+      <div class="field" style="margin-bottom:12px">
+        <div class="lbl">Intensidade do efeito</div>
+        <select id="lut-foto-intensity">
+          <option value="1.0">100% — idêntico à foto</option>
+          <option value="0.75">75% — look sutil</option>
+          <option value="0.5">50% — toque leve</option>
+        </select>
+      </div>
+      <button class="btn" id="lut-foto-btn" onclick="runLutFoto()">📷 Replicar look desta foto →</button>
+    </div>
+    <div id="lut-foto-out" style="margin-top:20px"></div>
+  </div>
 </div>
 
 <!-- ── EFEITOS SONOROS ── -->
@@ -714,136 +805,320 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
 <div id="tab-prompts" class="tab-pane">
   <div class="tab-header">
     <h2><span>🤖</span> Prompts para IA</h2>
-    <p>Descreva sua ideia, escolha a IA e receba um prompt profissional otimizado para aquela ferramenta específica.</p>
+    <p>Gere prompts profissionais otimizados — ou monte um Prompt JSON estruturado para máxima precisão.</p>
   </div>
   <div class="sep"></div>
 
-  <!-- Tipo: Imagem ou Vídeo -->
-  <div class="field">
-    <div class="lbl">Tipo de conteúdo</div>
-    <div id="tipo-row" style="display:flex;gap:10px">
-      <button id="tipo-img-btn" class="tipo-btn active" onclick="setTipo('img')">🖼 Imagem</button>
-      <button id="tipo-vid-btn" class="tipo-btn" onclick="setTipo('vid')">🎬 Vídeo</button>
-    </div>
+  <!-- ── SEÇÃO 1: PROMPT RÁPIDO ── -->
+  <div class="lbl" style="margin-bottom:14px">① Prompt Rápido</div>
+
+  <div style="display:flex;gap:10px;margin-bottom:20px">
+    <button id="tipo-img-btn" class="tipo-btn active" onclick="setTipo('img')">🖼 Imagem</button>
+    <button id="tipo-vid-btn" class="tipo-btn" onclick="setTipo('vid')">🎬 Vídeo</button>
   </div>
 
-  <!-- Seleção de IA -->
-  <div class="field">
-    <div class="lbl">Escolha a IA</div>
-    <div id="ia-grid-img" class="ia-grid">
-      <div class="ia-card active" id="ia-midjourney" onclick="selectIA('midjourney','img')">
-        <div class="ia-name">Midjourney v7</div>
-        <div class="ia-tag">Melhor qualidade artística</div>
-      </div>
-      <div class="ia-card" id="ia-flux" onclick="selectIA('flux','img')">
-        <div class="ia-name">FLUX 1.1 Pro</div>
-        <div class="ia-tag">Melhor fotorrealismo</div>
-      </div>
-      <div class="ia-card" id="ia-ideogram" onclick="selectIA('ideogram','img')">
-        <div class="ia-name">Ideogram 2.0</div>
-        <div class="ia-tag">Thumbnails com texto</div>
-      </div>
-      <div class="ia-card" id="ia-firefly" onclick="selectIA('firefly','img')">
-        <div class="ia-name">Adobe Firefly</div>
-        <div class="ia-tag">Uso comercial seguro</div>
-      </div>
-      <div class="ia-card" id="ia-dalle" onclick="selectIA('dalle','img')">
-        <div class="ia-name">DALL-E 3</div>
-        <div class="ia-tag">Mais fácil, via ChatGPT</div>
-      </div>
-      <div class="ia-card" id="ia-leonardo" onclick="selectIA('leonardo','img')">
-        <div class="ia-name">Leonardo AI</div>
-        <div class="ia-tag">Consistência de personagem</div>
-      </div>
-    </div>
-    <div id="ia-grid-vid" class="ia-grid" style="display:none">
-      <div class="ia-card active" id="ia-kling" onclick="selectIA('kling','vid')">
-        <div class="ia-name">Kling 3.0</div>
-        <div class="ia-tag">Melhor movimento humano</div>
-      </div>
-      <div class="ia-card" id="ia-seedance" onclick="selectIA('seedance','vid')">
-        <div class="ia-name">Seedance 2.0</div>
-        <div class="ia-tag">Direção + áudio nativo</div>
-      </div>
-      <div class="ia-card" id="ia-runway" onclick="selectIA('runway','vid')">
-        <div class="ia-name">Runway Gen-4</div>
-        <div class="ia-tag">Pós-produção profissional</div>
-      </div>
-      <div class="ia-card" id="ia-veo" onclick="selectIA('veo','vid')">
-        <div class="ia-name">Veo 3.1 (Google)</div>
-        <div class="ia-tag">Fotorrealismo + áudio sync</div>
-      </div>
-      <div class="ia-card" id="ia-luma" onclick="selectIA('luma','vid')">
-        <div class="ia-name">Luma Ray2</div>
-        <div class="ia-tag">Física e planos épicos</div>
-      </div>
-      <div class="ia-card" id="ia-pika" onclick="selectIA('pika','vid')">
-        <div class="ia-name">Pika 2.0</div>
-        <div class="ia-tag">Rápido para redes sociais</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Badge da IA selecionada -->
-  <div id="ia-badge" class="ia-badge-row">
-    <span id="ia-badge-icon">🎨</span>
-    <span id="ia-badge-name">Midjourney v7</span>
-    <span id="ia-badge-desc" class="ia-badge-desc">Melhor para: qualidade artística, cinematic mood, fashion, concept art. Usa pesos :: e parâmetros --ar --style --v</span>
-  </div>
-
-  <!-- Inputs -->
   <div class="field">
     <div class="lbl">Descreva sua ideia</div>
-    <textarea id="pr-ideia" rows="4" placeholder="Ex: uma mulher pintando um quadro em seu atelier, luz natural entrando pela janela, estilo cinematográfico e íntimo..."></textarea>
+    <textarea id="pr-ideia" rows="4" placeholder="Ex: uma mulher pintando em seu atelier, luz natural pela janela, estilo cinematográfico e íntimo..."></textarea>
   </div>
   <div class="grid2">
     <div class="field" style="margin-bottom:0">
       <div class="lbl">Estilo / referência visual</div>
-      <input type="text" id="pr-estilo" placeholder="Ex: Peter McKinnon, Wes Anderson, fotografía analógica..."/>
+      <input type="text" id="pr-estilo" placeholder="Ex: Peter McKinnon, Wes Anderson, analógico..."/>
     </div>
     <div class="field" style="margin-bottom:0">
-      <div class="lbl">Proporção / formato</div>
+      <div class="lbl">Proporção</div>
       <select id="pr-ratio">
-        <option value="16:9">16:9 — Widescreen / YouTube</option>
-        <option value="9:16">9:16 — Vertical / Reels</option>
-        <option value="1:1">1:1 — Quadrado / Instagram</option>
+        <option value="16:9">16:9 — YouTube / Widescreen</option>
+        <option value="9:16">9:16 — Reels / Vertical</option>
+        <option value="1:1">1:1 — Quadrado</option>
         <option value="4:3">4:3 — Clássico</option>
-        <option value="21:9">21:9 — Ultrawide / Cinemascope</option>
+        <option value="21:9">21:9 — Cinemascope</option>
         <option value="4:5">4:5 — Feed Instagram</option>
       </select>
     </div>
   </div>
-  <div id="video-extras" style="display:none;margin-top:12px">
+  <div id="video-extras" style="display:none;margin-top:14px">
     <div class="grid2">
       <div class="field" style="margin-bottom:0">
-        <div class="lbl">Duração do clipe</div>
+        <div class="lbl">Duração</div>
         <select id="pr-dur">
-          <option>5 segundos</option>
-          <option>10 segundos</option>
-          <option>15 segundos</option>
-          <option>30 segundos</option>
+          <option>5 segundos</option><option>10 segundos</option>
+          <option>15 segundos</option><option>30 segundos</option>
         </select>
       </div>
       <div class="field" style="margin-bottom:0">
         <div class="lbl">Movimento de câmera</div>
         <select id="pr-cam">
-          <option>Câmera estática</option>
-          <option>Dolly in (aproximação)</option>
-          <option>Dolly out (afastamento)</option>
-          <option>Pan horizontal</option>
-          <option>Tilt vertical</option>
-          <option>Drone / bird's eye view</option>
-          <option>Handheld (tremido sutil)</option>
-          <option>Orbit / 360°</option>
+          <option>Câmera estática</option><option>Dolly in (aproximação)</option>
+          <option>Dolly out (afastamento)</option><option>Pan horizontal</option>
+          <option>Tilt vertical</option><option>Drone / bird's eye view</option>
+          <option>Handheld (tremido sutil)</option><option>Orbit / 360°</option>
         </select>
       </div>
     </div>
   </div>
-  <div style="height:16px"></div>
-  <button class="btn" id="pr-btn" onclick="runPrompts()">✦ Gerar Prompt Profissional →</button>
-
-  <!-- Resultado com card colapsável por versão -->
+  <div style="height:18px"></div>
+  <button class="btn" id="pr-btn" onclick="runPrompts()">✦ Gerar Prompt →</button>
   <div id="pr-out"></div>
+
+  <div class="sep" style="margin-top:32px"></div>
+
+  <!-- ── SEÇÃO 2: PROMPT JSON ── -->
+  <div class="lbl" style="margin-bottom:6px">② Prompt JSON Estruturado</div>
+  <p style="font-size:12.5px;color:var(--muted);margin-bottom:20px;line-height:1.65">Preencha os campos abaixo para montar um prompt com máxima precisão — quanto mais você preencher, mais preciso o resultado.</p>
+
+  <!-- TIPO & OBJETIVO -->
+  <div class="pj-section">
+    <div class="pj-section-title">Tipo & Objetivo</div>
+    <div class="grid2">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Tipo de conteúdo</div>
+        <select id="pj-type" onchange="pjUpdate()">
+          <option value="image">image</option><option value="video">video</option>
+          <option value="3D">3D</option><option value="text">text</option><option value="audio">audio</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Objetivo</div>
+        <select id="pj-goal" onchange="pjUpdate()">
+          <option value="cinematic">cinematic</option><option value="advertisement">advertisement</option>
+          <option value="social media">social media</option><option value="branding">branding</option>
+          <option value="storytelling">storytelling</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUJEITO -->
+  <div class="pj-section">
+    <div class="pj-section-title">Sujeito</div>
+    <div class="field">
+      <div class="lbl">Principal</div>
+      <input type="text" id="pj-subject-main" placeholder="Ex: woman, product, landscape..." oninput="pjUpdate()"/>
+    </div>
+    <div class="field">
+      <div class="lbl">Descrição detalhada</div>
+      <input type="text" id="pj-subject-desc" placeholder="Ex: 30s, long dark hair, wearing white linen dress..." oninput="pjUpdate()"/>
+    </div>
+    <div class="grid2">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Atributos (separados por vírgula)</div>
+        <input type="text" id="pj-subject-attr" placeholder="Ex: elegant, confident, natural..." oninput="pjUpdate()"/>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Estilo do sujeito</div>
+        <input type="text" id="pj-subject-style" placeholder="Ex: editorial, commercial, raw..." oninput="pjUpdate()"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- AÇÃO -->
+  <div class="pj-section">
+    <div class="pj-section-title">Ação</div>
+    <div class="grid2">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Ação principal</div>
+        <input type="text" id="pj-action-primary" placeholder="Ex: walking slowly, pouring coffee..." oninput="pjUpdate()"/>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Ação secundária</div>
+        <input type="text" id="pj-action-secondary" placeholder="Ex: hair blowing in wind..." oninput="pjUpdate()"/>
+      </div>
+    </div>
+    <div class="field" style="margin-top:12px;margin-bottom:0">
+      <div class="lbl">Timing / momento</div>
+      <input type="text" id="pj-action-timing" placeholder="Ex: slow motion, real-time, time-lapse..." oninput="pjUpdate()"/>
+    </div>
+  </div>
+
+  <!-- AMBIENTE -->
+  <div class="pj-section">
+    <div class="pj-section-title">Ambiente</div>
+    <div class="grid2">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Localização</div>
+        <input type="text" id="pj-env-location" placeholder="Ex: Tokyo streets, desert, studio..." oninput="pjUpdate()"/>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Período do dia</div>
+        <select id="pj-env-time" onchange="pjUpdate()">
+          <option value="">— não especificado —</option>
+          <option value="day">day</option><option value="night">night</option>
+          <option value="sunset">sunset</option><option value="studio">studio</option>
+        </select>
+      </div>
+    </div>
+    <div class="field" style="margin-top:12px;margin-bottom:0">
+      <div class="lbl">Atmosfera / clima</div>
+      <input type="text" id="pj-env-atm" placeholder="Ex: foggy, rainy, moody, warm and intimate..." oninput="pjUpdate()"/>
+    </div>
+  </div>
+
+  <!-- VISUAL -->
+  <div class="pj-section">
+    <div class="pj-section-title">Visual</div>
+    <div class="grid2">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Estilo visual</div>
+        <input type="text" id="pj-vis-style" placeholder="Ex: cinematic, editorial, hyperrealistic..." oninput="pjUpdate()"/>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Referência</div>
+        <input type="text" id="pj-vis-ref" placeholder="Ex: Peter McKinnon, Blade Runner 2049..." oninput="pjUpdate()"/>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Realismo</div>
+        <select id="pj-vis-real" onchange="pjUpdate()">
+          <option value="realistic">realistic</option>
+          <option value="semi-realistic">semi-realistic</option>
+          <option value="stylized">stylized</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Nível de detalhe</div>
+        <select id="pj-vis-detail" onchange="pjUpdate()">
+          <option value="high detail">high detail</option>
+          <option value="minimal">minimal</option>
+          <option value="clean">clean</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ILUMINAÇÃO -->
+  <div class="pj-section">
+    <div class="pj-section-title">Iluminação</div>
+    <div class="grid2">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Tipo</div>
+        <input type="text" id="pj-light-type" placeholder="Ex: golden hour, softbox, neon, backlit..." oninput="pjUpdate()"/>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Direção</div>
+        <input type="text" id="pj-light-dir" placeholder="Ex: side lit, top-down, rim light..." oninput="pjUpdate()"/>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Intensidade</div>
+        <input type="text" id="pj-light-int" placeholder="Ex: soft, harsh, diffused..." oninput="pjUpdate()"/>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Cor da luz</div>
+        <input type="text" id="pj-light-color" placeholder="Ex: warm orange, cool blue, neutral white..." oninput="pjUpdate()"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- CÂMERA -->
+  <div class="pj-section">
+    <div class="pj-section-title">Câmera</div>
+    <div class="grid2">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Ângulo</div>
+        <input type="text" id="pj-cam-angle" placeholder="Ex: low angle, eye level, bird's eye..." oninput="pjUpdate()"/>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Lente</div>
+        <input type="text" id="pj-cam-lens" placeholder="Ex: 35mm f/1.4, 85mm portrait, wide angle..." oninput="pjUpdate()"/>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Movimento</div>
+        <input type="text" id="pj-cam-move" placeholder="Ex: dolly in, handheld, static, orbit..." oninput="pjUpdate()"/>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Enquadramento</div>
+        <input type="text" id="pj-cam-frame" placeholder="Ex: close-up, medium shot, wide establishing..." oninput="pjUpdate()"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- COR -->
+  <div class="pj-section">
+    <div class="pj-section-title">Cor</div>
+    <div class="grid2">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Color grading</div>
+        <input type="text" id="pj-color-grade" placeholder="Ex: desaturated teal & orange, warm vintage..." oninput="pjUpdate()"/>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Paleta (separado por vírgula)</div>
+        <input type="text" id="pj-color-palette" placeholder="Ex: #1a1a2e, deep red, cream white..." oninput="pjUpdate()"/>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Contraste</div>
+        <input type="text" id="pj-color-contrast" placeholder="Ex: high contrast, flat, filmic..." oninput="pjUpdate()"/>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Saturação</div>
+        <input type="text" id="pj-color-sat" placeholder="Ex: desaturated, vibrant, muted..." oninput="pjUpdate()"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- TÉCNICO -->
+  <div class="pj-section">
+    <div class="pj-section-title">Técnico</div>
+    <div class="grid2">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Resolução</div>
+        <select id="pj-tech-res" onchange="pjUpdate()">
+          <option value="4k">4K</option><option value="HD">HD</option><option value="8k">8K</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Aspect Ratio</div>
+        <select id="pj-tech-ar" onchange="pjUpdate()">
+          <option value="16:9">16:9</option><option value="9:16">9:16</option>
+          <option value="1:1">1:1</option><option value="4:3">4:3</option><option value="4:5">4:5</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Duração (vídeo)</div>
+        <input type="text" id="pj-tech-dur" placeholder="Ex: 10s, 30s, 1min..." oninput="pjUpdate()"/>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">FPS (vídeo)</div>
+        <input type="text" id="pj-tech-fps" placeholder="Ex: 24, 30, 60..." oninput="pjUpdate()"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESTRIÇÕES -->
+  <div class="pj-section">
+    <div class="pj-section-title">Restrições</div>
+    <div class="grid2">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Must have (separado por vírgula)</div>
+        <input type="text" id="pj-must" placeholder="Ex: no text, no logo, person centered..." oninput="pjUpdate()"/>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Evitar (separado por vírgula)</div>
+        <input type="text" id="pj-avoid" placeholder="Ex: blur, artifacts, distortion, watermark..." oninput="pjUpdate()"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- JSON PREVIEW + ACTIONS -->
+  <div class="sep" style="margin-top:8px"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">
+    <div class="lbl" style="margin:0">JSON gerado</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-ghost" onclick="pjCopyJson()" style="font-size:12px">📋 Copiar JSON</button>
+      <button class="btn" onclick="pjGenPrompt()" style="padding:8px 18px;font-size:12.5px">✦ Gerar Prompt do JSON →</button>
+    </div>
+  </div>
+  <pre id="pj-json-preview" style="background:var(--dim);border:1px solid var(--border2);border-radius:10px;padding:16px 18px;font-size:12px;font-family:var(--font-mono);color:var(--text2);line-height:1.7;overflow-x:auto;white-space:pre-wrap;max-height:340px;overflow-y:auto"></pre>
+  <div id="pj-out" style="margin-top:16px"></div>
 </div>
 
 <!-- ── CHECKLIST ── -->
@@ -1174,11 +1449,295 @@ async function runCorte() {
 
 async function runLUT() {
   const estilo = document.getElementById('l-estilo').value.trim();
-  if (!estilo) { alert('Descreva o estilo visual que você quer.'); return; }
+  const ref    = document.getElementById('l-ref').value.trim();
+  const amb    = document.getElementById('l-amb').value;
+  const canvas = document.getElementById('lut-canvas');
+  const hasVideo = !!(canvas && canvas._base64);
+
+  if (!estilo && !hasVideo) { alert('Descreva o estilo que você quer, ou envie um vídeo.'); return; }
+
   setBtn('l-btn', true);
-  const out = await ai(`Sou videomaker, gravo com iPhone 17 Pro Max e edito no CapCut Pro Desktop (Windows).\n\nEstilo visual que quero: ${estilo}\nReferência: ${document.getElementById('l-ref').value.trim() || 'não informado'}\nAmbiente de gravação: ${document.getElementById('l-amb').value}\n\nRetorne:\n1. 🎨 LUT RECOMENDADO — nome exato + onde baixar (grátis se possível)\n2. 🆓 ALTERNATIVA GRATUITA — disponível em Lutify.me, IWLTBAP ou Freesound\n3. ⚙️ CONFIGURAÇÕES — valores exatos de exposição, temperatura, contraste, saturação, sombras e realces no CapCut Pro\n4. 📋 PASSO A PASSO — como importar e aplicar o LUT no CapCut Pro Desktop em passos numerados\n5. 📱 DICA iPHONE — ajuste específico para vídeo do iPhone neste estilo visual\n\nResponda em português de forma clara e objetiva.`);
-  renderOut('l-out', out);
+
+  // Build prompt — with or without vision
+  const styleCtx = estilo
+    ? `\nEstilo desejado: ${estilo}\nReferência: ${ref || 'não informado'}\nAmbiente: ${amb}`
+    : `\nAmbiente: ${amb}`;
+
+  let params;
+
+  if (hasVideo) {
+    // Vision mode: analyze frame AND apply desired style
+    const visionPrompt = `Analise as cores e o look atual deste frame de vídeo (iPhone 17 Pro Max, CapCut Pro).${styleCtx ? '\n\nAlém de manter as características boas do vídeo, aplique este estilo desejado:' + styleCtx : ''}\n\nRetorne APENAS um JSON válido (sem markdown, sem texto extra):\n{"lift_r":0,"lift_g":0,"lift_b":0,"gamma_r":1,"gamma_g":1,"gamma_b":1,"gain_r":1,"gain_g":1,"gain_b":1,"saturation":1,"contrast":1,"shadows":0,"name":"Rosu Custom"}\n\nRanges: lift -0.12→0.12, gamma 0.7→1.5, gain 0.88→1.12, saturation 0.6→1.5, contrast 0.85→1.35, shadows -0.08→0.08. Só o JSON.`;
+    params = await aiVision(canvas._base64, visionPrompt);
+  } else {
+    // Text-only mode: generate .cube from description alone
+    const textPrompt = `Sou videomaker com iPhone 17 Pro Max e CapCut Pro Desktop.\n${styleCtx}\n\nGere parâmetros para um arquivo .cube LUT que atinja este estilo visual. Retorne APENAS JSON válido:\n{"lift_r":0,"lift_g":0,"lift_b":0,"gamma_r":1,"gamma_g":1,"gamma_b":1,"gain_r":1,"gain_g":1,"gain_b":1,"saturation":1,"contrast":1,"shadows":0,"name":"Rosu Custom"}\n\nRanges: lift -0.12→0.12, gamma 0.7→1.5, gain 0.88→1.12, saturation 0.6→1.5, contrast 0.85→1.35, shadows -0.08→0.08. Só o JSON.`;
+    const raw = await ai(textPrompt);
+    try { const m = raw.match(/\{[\s\S]*\}/); params = m ? JSON.parse(m[0]) : null; } catch(e) { params = null; }
+  }
+
   setBtn('l-btn', false);
+  renderLutResult('l-out', params);
+}
+
+// ── LUT VIDEO ────────────────────────────────────────────────────────────────
+function lutVidDrop(e) {
+  e.preventDefault();
+  document.getElementById('lut-vid-dz').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('video/')) lutVidSelect(file);
+}
+
+function lutVidSelect(file) {
+  if (!file) return;
+  const video = document.createElement('video');
+  video.src = URL.createObjectURL(file);
+  video.muted = true;
+  video.preload = 'metadata';
+  video.addEventListener('loadedmetadata', () => {
+    video.currentTime = Math.min(video.duration * 0.25, 8);
+  });
+  video.addEventListener('seeked', () => {
+    const canvas = document.getElementById('lut-canvas');
+    canvas.width = 900;
+    canvas.height = Math.round(900 / (video.videoWidth / video.videoHeight));
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+    document.getElementById('lut-frame-img').src = dataUrl;
+    document.getElementById('lut-vid-preview').style.display = 'block';
+    document.getElementById('lut-vid-dz').style.display = 'none';
+
+    // Extract dominant colors for palette preview
+    const palette = extractPalette(ctx, canvas.width, canvas.height);
+    const colorsEl = document.getElementById('lut-frame-colors');
+    colorsEl.innerHTML = palette.map(c =>
+      `<div title="${c}" style="width:28px;height:28px;border-radius:6px;background:${c};border:1px solid rgba(255,255,255,0.1);flex-shrink:0"></div>`
+    ).join('') + `<span style="font-size:11px;color:var(--muted);align-self:center;margin-left:4px;font-family:var(--font-mono)">paleta atual do vídeo</span>`;
+
+    URL.revokeObjectURL(video.src);
+    canvas._base64 = dataUrl.split(',')[1];
+  });
+  video.load();
+}
+
+function lutVidRemove() {
+  const canvas = document.getElementById('lut-canvas');
+  canvas._base64 = null;
+  document.getElementById('lut-vid-preview').style.display = 'none';
+  document.getElementById('lut-vid-dz').style.display = 'block';
+  document.getElementById('lut-frame-colors').innerHTML = '';
+  document.getElementById('l-out').innerHTML = '';
+  const input = document.getElementById('lut-vid-input');
+  input.value = '';
+}
+
+function extractPalette(ctx, w, h) {
+  // Sample ~200 pixels across the frame and cluster into 8 colors
+  const step = Math.max(1, Math.floor(Math.sqrt((w * h) / 200)));
+  const buckets = {};
+  for (let y = 0; y < h; y += step) {
+    for (let x = 0; x < w; x += step) {
+      const d = ctx.getImageData(x, y, 1, 1).data;
+      // Quantize to 32-step buckets
+      const r = Math.round(d[0] / 32) * 32;
+      const g = Math.round(d[1] / 32) * 32;
+      const b = Math.round(d[2] / 32) * 32;
+      const key = `${r},${g},${b}`;
+      buckets[key] = (buckets[key] || 0) + 1;
+    }
+  }
+  return Object.entries(buckets)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([k]) => { const [r,g,b] = k.split(','); return `rgb(${r},${g},${b})`; });
+}
+
+// ── LUT FOTO ─────────────────────────────────────────────────────────────────
+function lutFotoDrop(e) {
+  e.preventDefault();
+  document.getElementById('lut-foto-dz').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) lutFotoSelect(file);
+}
+
+function lutFotoSelect(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const dataUrl = ev.target.result;
+    document.getElementById('lut-foto-img').src = dataUrl;
+    document.getElementById('lut-foto-preview').style.display = 'block';
+    document.getElementById('lut-foto-controls').style.display = 'block';
+    document.getElementById('lut-foto-dz').style.display = 'none';
+    document.getElementById('lut-foto-dz')._base64 = dataUrl.split(',')[1];
+  };
+  reader.readAsDataURL(file);
+}
+
+function lutFotoRemove() {
+  document.getElementById('lut-foto-preview').style.display = 'none';
+  document.getElementById('lut-foto-controls').style.display = 'none';
+  document.getElementById('lut-foto-dz').style.display = 'block';
+  document.getElementById('lut-foto-dz')._base64 = null;
+  document.getElementById('lut-foto-out').innerHTML = '';
+  document.getElementById('lut-foto-input').value = '';
+}
+
+async function runLutFoto() {
+  const base64 = document.getElementById('lut-foto-dz')._base64;
+  if (!base64) { alert('Selecione uma foto primeiro.'); return; }
+  const btn = document.getElementById('lut-foto-btn');
+  btn.disabled = true; btn.textContent = '⏳ Analisando look da foto...';
+  const intensity = parseFloat(document.getElementById('lut-foto-intensity').value);
+  const params = await aiVision(base64, `Analisa o color grade desta foto de referência e retorna APENAS um JSON (sem markdown, sem explicação) com parâmetros para gerar um arquivo .cube LUT que replica exatamente este look visual.\n\nJSON exato:\n{"lift_r":0,"lift_g":0,"lift_b":0,"gamma_r":1,"gamma_g":1,"gamma_b":1,"gain_r":1,"gain_g":1,"gain_b":1,"saturation":1,"contrast":1,"shadows":0,"name":"Rosu Reference"}\n\nValores: lift -0.12 a 0.12, gamma 0.7 a 1.5, gain 0.88 a 1.12, saturation 0.6 a 1.5, contrast 0.85 a 1.35, shadows -0.08 a 0.08. Capte tons, temperatura, saturação, contraste, sombras e realces. Só JSON.`);
+  btn.disabled = false; btn.textContent = '📷 Replicar look desta foto →';
+  renderLutResult('lut-foto-out', params, intensity);
+}
+
+// ── AI VISION HELPER ─────────────────────────────────────────────────────────
+async function aiVision(base64, prompt) {
+  const key = localStorage.getItem('anthropic_key') || '';
+  if (!key) { showKeySetup(); return null; }
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 500,
+        messages: [{ role: 'user', content: [
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
+          { type: 'text', text: prompt }
+        ]}]
+      })
+    });
+    const d = await r.json();
+    if (d.error) return null;
+    const text = d.content.map(b => b.text || '').join('').trim();
+    const match = text.match(/\{[\s\S]*\}/);
+    return match ? JSON.parse(match[0]) : null;
+  } catch(e) { return null; }
+}
+
+// ── LUT GENERATOR ────────────────────────────────────────────────────────────
+function renderLutResult(elId, params, intensity = 1.0) {
+  const el = document.getElementById(elId);
+  if (!params) {
+    el.innerHTML = `<div class="tip amber">⚠ Não foi possível analisar a imagem. Verifique sua chave de API e tente novamente.</div>`;
+    return;
+  }
+
+  // Blend params with identity based on intensity
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const p = {
+    lift_r: lerp(0, params.lift_r, intensity), lift_g: lerp(0, params.lift_g, intensity), lift_b: lerp(0, params.lift_b, intensity),
+    gamma_r: lerp(1, params.gamma_r, intensity), gamma_g: lerp(1, params.gamma_g, intensity), gamma_b: lerp(1, params.gamma_b, intensity),
+    gain_r: lerp(1, params.gain_r, intensity), gain_g: lerp(1, params.gain_g, intensity), gain_b: lerp(1, params.gain_b, intensity),
+    saturation: lerp(1, params.saturation, intensity),
+    contrast: lerp(1, params.contrast, intensity),
+    shadows: lerp(0, params.shadows || 0, intensity)
+  };
+
+  const cubeName = (params.name || 'Rosu LUT').replace(/[^a-zA-Z0-9 _-]/g,'');
+  const cubeContent = generateCube(p, cubeName);
+  const blob = new Blob([cubeContent], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const fileName = cubeName.replace(/ /g,'_') + '.cube';
+
+  // Format display values
+  const fmt = v => (v >= 0 ? '+' : '') + v.toFixed(3);
+  const fmtM = v => v.toFixed(2) + '×';
+
+  el.innerHTML = `
+    <div class="lut-dl-card">
+      <div class="lut-dl-head">
+        <div>
+          <div class="lut-dl-title">📦 ${escHtml(cubeName)}.cube</div>
+          <div class="lut-dl-sub">3D LUT · 17×17×17 · compatível com CapCut Pro, DaVinci, Premiere</div>
+        </div>
+      </div>
+      <div class="lut-dl-body">
+        <div class="lut-params-grid">
+          <div class="lut-param"><div class="lut-param-val">${fmtM(p.contrast)}</div><div class="lut-param-label">Contraste</div></div>
+          <div class="lut-param"><div class="lut-param-val">${fmtM(p.saturation)}</div><div class="lut-param-label">Saturação</div></div>
+          <div class="lut-param"><div class="lut-param-val">${fmt(p.lift_r)} · ${fmt(p.lift_g)} · ${fmt(p.lift_b)}</div><div class="lut-param-label">Lift R·G·B</div></div>
+          <div class="lut-param"><div class="lut-param-val">${fmtM(p.gamma_r)} · ${fmtM(p.gamma_g)} · ${fmtM(p.gamma_b)}</div><div class="lut-param-label">Gamma R·G·B</div></div>
+          <div class="lut-param"><div class="lut-param-val">${fmtM(p.gain_r)} · ${fmtM(p.gain_g)} · ${fmtM(p.gain_b)}</div><div class="lut-param-label">Gain R·G·B</div></div>
+          <div class="lut-param"><div class="lut-param-val">${fmt(p.shadows)}</div><div class="lut-param-label">Sombras</div></div>
+        </div>
+        <button class="lut-dl-btn" onclick="window._lutUrl='${url}';window._lutName='${escHtml(fileName)}';downloadLut()">
+          ⬇ Baixar ${escHtml(fileName)}
+        </button>
+        <div style="margin-top:12px;font-size:12px;color:var(--muted);line-height:1.65">
+          💡 No CapCut Pro: <strong>Ajustes → Color Grading → LUT → Importar</strong> → selecione o arquivo .cube
+        </div>
+      </div>
+    </div>`;
+}
+
+function downloadLut() {
+  const a = document.createElement('a');
+  a.href = window._lutUrl; a.download = window._lutName; a.click();
+}
+
+function generateCube(p, title) {
+  const SIZE = 17;
+  const lines = [`TITLE "${title}"`, `LUT_3D_SIZE ${SIZE}`, `DOMAIN_MIN 0.0 0.0 0.0`, `DOMAIN_MAX 1.0 1.0 1.0`, ``];
+
+  for (let bi = 0; bi < SIZE; bi++) {
+    for (let gi = 0; gi < SIZE; gi++) {
+      for (let ri = 0; ri < SIZE; ri++) {
+        const r = ri / (SIZE - 1);
+        const g = gi / (SIZE - 1);
+        const b = bi / (SIZE - 1);
+        const [ro, go, bo] = applyLutParams(r, g, b, p);
+        lines.push(`${ro.toFixed(6)} ${go.toFixed(6)} ${bo.toFixed(6)}`);
+      }
+    }
+  }
+  return lines.join('\n');
+}
+
+function applyLutParams(r, g, b, p) {
+  // Lift/Gamma/Gain per channel
+  function lgg(v, lift, gamma, gain) {
+    v = Math.max(0, Math.min(1, v));
+    v = v + lift * (1 - v);          // lift: pushes shadows up
+    v = Math.pow(Math.max(0, v), 1 / Math.max(0.1, gamma)); // gamma
+    v = v * gain;                     // gain: highlights
+    return Math.max(0, Math.min(1, v));
+  }
+  r = lgg(r, p.lift_r, p.gamma_r, p.gain_r);
+  g = lgg(g, p.lift_g, p.gamma_g, p.gain_g);
+  b = lgg(b, p.lift_b, p.gamma_b, p.gain_b);
+
+  // Shadows boost
+  if (p.shadows) {
+    const shadow_mask = Math.pow(1 - Math.max(r,g,b), 2);
+    r += p.shadows * shadow_mask;
+    g += p.shadows * shadow_mask;
+    b += p.shadows * shadow_mask;
+  }
+
+  // Contrast (pivot at 0.5)
+  function contrast(v, c) { return Math.max(0, Math.min(1, (v - 0.5) * c + 0.5)); }
+  r = contrast(r, p.contrast);
+  g = contrast(g, p.contrast);
+  b = contrast(b, p.contrast);
+
+  // Saturation (Rec.709 luma)
+  const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  r = Math.max(0, Math.min(1, luma + (r - luma) * p.saturation));
+  g = Math.max(0, Math.min(1, luma + (g - luma) * p.saturation));
+  b = Math.max(0, Math.min(1, luma + (b - luma) * p.saturation));
+
+  return [r, g, b];
 }
 
 async function runSFX() {
@@ -1601,49 +2160,12 @@ initNB();
 
 // ── Prompts IA ───────────────────────────────────────────────────────────────
 let prTipo = 'img';
-let prIA = 'midjourney';
-
-const IA_INFO = {
-  // Imagem
-  midjourney: { icon:'🎨', name:'Midjourney v7', desc:'Melhor para: qualidade artística, cinematic mood, fashion, concept art. Usa pesos :: e parâmetros --ar --style --v 7', tip:'Cole o prompt direto no Discord do Midjourney ou em midjourney.com' },
-  flux:       { icon:'📸', name:'FLUX 1.1 Pro',  desc:'Melhor para: fotorrealismo, comercial, produtos, retratos hiper-detalhados. Linguagem descritiva e técnica fotográfica', tip:'Acesse via fal.ai, Replicate ou Leonardo AI (modelo FLUX)' },
-  ideogram:   { icon:'🔤', name:'Ideogram 2.0',  desc:'Melhor para: thumbnails com texto legível, logos, posters, capas. O único que renderiza texto em imagem corretamente', tip:'Acesse em ideogram.ai — plano grátis com 10 gerações por semana' },
-  firefly:    { icon:'🔥', name:'Adobe Firefly', desc:'Melhor para: uso comercial seguro, integração com Photoshop, brand assets. Treinado em imagens licenciadas', tip:'Acesse via Adobe Creative Cloud, Photoshop ou firefly.adobe.com' },
-  dalle:      { icon:'🧠', name:'DALL-E 3',      desc:'Melhor para: facilidade de uso, conversacional, ilustrações variadas. Disponível direto no ChatGPT', tip:'Use direto no ChatGPT — basta pedir "gere uma imagem de..." e cole o prompt' },
-  leonardo:   { icon:'🦁', name:'Leonardo AI',   desc:'Melhor para: personagens consistentes, game art, product shots, múltiplas variações. 150 gerações grátis por dia', tip:'Acesse em leonardo.ai — crie conta grátis e use o modelo Flux Dev ou Phoenix' },
-  // Vídeo
-  kling:      { icon:'⚡', name:'Kling 3.0',     desc:'Melhor para: movimento humano realista, multi-shot, cenas de ação, física. Mais rápido e barato entre os top', tip:'Acesse em kling.ai ou klingai.com — tem plano gratuito com marca d\'água' },
-  seedance:   { icon:'🎭', name:'Seedance 2.0',  desc:'Melhor para: direção precisa, consistência de personagem, áudio nativo, lip-sync multilíngue. O mais "cinematográfico"', tip:'Acesse em seedance.ai ou via fal.ai — ideal para anúncios e vídeos musicais' },
-  runway:     { icon:'🛤️', name:'Runway Gen-4',  desc:'Melhor para: pós-produção profissional, fluxo editorial, câmera cinematográfica controlada, efeitos visuais', tip:'Acesse em runwayml.com — from $15/mês, muito usado por profissionais de VFX' },
-  veo:        { icon:'🔵', name:'Veo 3.1 (Google)', desc:'Melhor para: fotorrealismo máximo, áudio sincronizado automático, documentários, diálogos com lip-sync', tip:'Acesse via Google AI Studio, Google One Premium ou VideoFX (beta)' },
-  luma:       { icon:'🌙', name:'Luma Ray2',     desc:'Melhor para: planos de estabelecimento épicos, física natural, cenas com água/fogo/fumaça, 3D fly-through', tip:'Acesse em lumaai.com — plano grátis com 30 gerações por mês' },
-  pika:       { icon:'⚡', name:'Pika 2.0',      desc:'Melhor para: clipes curtos de redes sociais, velocidade (15-30s), animação de fotos, conteúdo diário de volume', tip:'Acesse em pika.art — mais rápido para produção de conteúdo social frequente' },
-};
 
 function setTipo(tipo) {
   prTipo = tipo;
   document.getElementById('tipo-img-btn').classList.toggle('active', tipo === 'img');
   document.getElementById('tipo-vid-btn').classList.toggle('active', tipo === 'vid');
-  document.getElementById('ia-grid-img').style.display = tipo === 'img' ? 'grid' : 'none';
-  document.getElementById('ia-grid-vid').style.display = tipo === 'vid' ? 'grid' : 'none';
   document.getElementById('video-extras').style.display = tipo === 'vid' ? 'block' : 'none';
-  const defaultIA = tipo === 'img' ? 'midjourney' : 'kling';
-  // deselect all
-  document.querySelectorAll('.ia-card').forEach(c => c.classList.remove('active'));
-  selectIA(defaultIA, tipo);
-}
-
-function selectIA(id, tipo) {
-  prIA = id;
-  document.querySelectorAll(`#ia-grid-${tipo} .ia-card`).forEach(c => c.classList.remove('active'));
-  const card = document.getElementById('ia-' + id);
-  if (card) card.classList.add('active');
-  const info = IA_INFO[id];
-  if (info) {
-    document.getElementById('ia-badge-icon').textContent = info.icon;
-    document.getElementById('ia-badge-name').textContent = info.name;
-    document.getElementById('ia-badge-desc').textContent = info.desc;
-  }
 }
 
 async function runPrompts() {
@@ -1652,75 +2174,150 @@ async function runPrompts() {
   setBtn('pr-btn', true);
 
   const estilo = document.getElementById('pr-estilo').value.trim();
-  const ratio = document.getElementById('pr-ratio').value;
-  const dur = prTipo === 'vid' ? document.getElementById('pr-dur').value : '';
-  const cam = prTipo === 'vid' ? document.getElementById('pr-cam').value : '';
-  const info = IA_INFO[prIA];
+  const ratio  = document.getElementById('pr-ratio').value;
+  const dur    = prTipo === 'vid' ? document.getElementById('pr-dur').value : '';
+  const cam    = prTipo === 'vid' ? document.getElementById('pr-cam').value : '';
 
-  const promptRules = {
-    midjourney: `REGRAS DO MIDJOURNEY v7:\n- Escreva em inglês\n- Estrutura: [sujeito principal], [ambiente/cenário], [iluminação], [estilo artístico], [câmera/lente], [mood], [referência de artista se relevante]\n- Use pesos ::2 para elementos mais importantes\n- Inclua: --ar ${ratio.replace(':','+')} (use + ao invés de : no parâmetro) --v 7 --style raw --q 2\n- Para fotorrealismo adicione: --style raw\n- Use palavras poderosas: cinematic, award-winning, masterpiece, ultra-detailed, volumetric lighting\n- Negative prompt no final com --no [elementos indesejados]\n- Escreva APENAS o prompt, sem explicações`,
-
-    flux: `REGRAS DO FLUX 1.1 Pro:\n- Escreva em inglês\n- Seja extremamente descritivo e técnico como um fotógrafo profissional\n- Inclua: tipo de câmera (Canon EOS R5, Sony A7IV etc), lente (35mm f/1.4, 85mm f/1.8), abertura, ISO, velocidade do obturador\n- Descreva luz com precisão: golden hour, softbox, rim lighting, natural diffused etc\n- Inclua textura de pele, materiais, reflexos, profundidade de campo\n- Proporção no final: [aspectRatio: ${ratio}]\n- NÃO use estilos artísticos — FLUX é para fotorrealismo\n- Escreva APENAS o prompt, sem explicações`,
-
-    ideogram: `REGRAS DO IDEOGRAM 2.0:\n- Escreva em inglês\n- SE tiver texto na imagem: especifique EXATAMENTE o texto entre aspas, fonte sugerida, cor e posição\n- Estrutura: [tipo de imagem: thumbnail/poster/logo], [composição visual], [texto principal em aspas], [cores dominantes], [estilo: bold graphic/clean minimal/etc]\n- Para thumbnails: especifique fundo, elemento principal, texto em destaque\n- Seja direto e objetivo — Ideogram prefere instruções claras a prosa poética\n- Adicione: Style: [Realistic/Design/3D Render/Illustration/Auto]\n- Aspect ratio: ${ratio}\n- Escreva APENAS o prompt, sem explicações`,
-
-    firefly: `REGRAS DO ADOBE FIREFLY:\n- Escreva em português OU inglês (aceita os dois)\n- Linguagem natural e descritiva como uma instrução criativa\n- Especifique: tipo de conteúdo, composição, paleta de cores, estilo, humor/atmosfera\n- Para uso comercial: evite mencionar pessoas reais, marcas ou propriedade intelectual\n- Inclua: proporção ${ratio}, estilo de iluminação, intenção de uso (marketing, social media, etc)\n- Adicione "Firefly Style Reference:" se tiver uma referência visual\n- Escreva APENAS o prompt, sem explicações`,
-
-    dalle: `REGRAS DO DALL-E 3 (ChatGPT):\n- Escreva em português OU inglês\n- Seja conversacional e descritivo — DALL-E entende linguagem natural muito bem\n- Especifique claramente: o que é a imagem, como ela se parece, ambiente, estilo, humor\n- Inclua detalhes de composição: ângulo, plano (close-up, wide shot), iluminação\n- Mencione o formato: proporção ${ratio}\n- Funciona bem com: "No estilo de [artista/filme]", "Fotografia de...", "Ilustração de..."\n- Escreva APENAS o prompt, sem explicações`,
-
-    leonardo: `REGRAS DO LEONARDO AI:\n- Escreva em inglês\n- Para modelo FLUX Dev: linguagem técnica fotográfica detalhada\n- Para modelo Phoenix: misture descrição artística com especificações técnicas\n- Inclua: personagem/sujeito com detalhes físicos precisos, cenário, iluminação, mood, estilo\n- Para consistência de personagem: descreva características físicas muito detalhadas\n- Adicione negative prompt: [elementos a evitar]\n- Aspect ratio: ${ratio} | Image Guidance: [0.5-0.8 para mais criatividade]\n- Escreva APENAS o prompt, sem explicações`,
-
-    kling: `REGRAS DO KLING 3.0:\n- Escreva em inglês\n- Estrutura obrigatória: [descrição da cena], [ação/movimento específico], [câmera: ${cam}], [iluminação], [estilo cinemático], [duração: ${dur}]\n- Seja MUITO específico no movimento: "she slowly turns her head to the left", não "she moves"\n- Descreva física: como a roupa se move, como o cabelo reage, expressões faciais\n- Inclua: aspect ratio ${ratio}, motion amount: [low/medium/high]\n- Camera: ${cam} — descreva o movimento da câmera em detalhes\n- Negative prompt: blurry, distorted, artifacts, low quality\n- Escreva APENAS o prompt, sem explicações`,
-
-    seedance: `REGRAS DO SEEDANCE 2.0:\n- Escreva em inglês\n- Você está DIRIGINDO a cena como um diretor de cinema\n- Estrutura: [shot type], [personagem + aparência física detalhada], [ação precisa], [ambiente], [câmera: ${cam}], [som/áudio se relevante], [duração: ${dur}]\n- Para lip-sync: especifique o idioma e o que a pessoa fala\n- Para áudio nativo: descreva sons ambiente, música, efeitos\n- Descreva o arco emocional da cena: começa assim, termina assim\n- Aspect ratio: ${ratio}\n- Escreva APENAS o prompt, sem explicações`,
-
-    runway: `REGRAS DO RUNWAY GEN-4:\n- Escreva em inglês\n- Estilo editorial cinematográfico profissional\n- Estrutura: [tipo de plano cinematográfico], [sujeito/ação], [câmera: ${cam}], [iluminação de filme], [paleta de cor], [duração: ${dur}], [aspect ratio: ${ratio}]\n- Use terminologia de câmera profissional: rack focus, dolly zoom, tracking shot, crane shot\n- Especifique referências de filme ou DOP (diretor de fotografia) se relevante\n- Adicione: Motion Brush areas para controlar quais partes se movem\n- Escreva APENAS o prompt, sem explicações`,
-
-    veo: `REGRAS DO VEO 3.1 (Google):\n- Escreva em inglês\n- Linguagem natural e muito detalhada — Veo entende contexto complexo\n- Estrutura: [abertura da cena], [sujeito principal + descrição], [ação e movimento], [câmera: ${cam}], [ambiente sonoro se quiser áudio], [duração: ${dur}]\n- Para áudio nativo: descreva os sons exatos que devem aparecer: "sounds of city traffic in background, birds chirping"\n- Para diálogo: "character says [frase exata] with natural lip sync"\n- Inclua descrição de cor/grading: "warm golden tones", "desaturated cinematic look"\n- Aspect ratio: ${ratio}\n- Escreva APENAS o prompt, sem explicações`,
-
-    luma: `REGRAS DO LUMA RAY2:\n- Escreva em inglês\n- Especialista em física e elementos naturais — descreva-os com detalhes técnicos\n- Estrutura: [establishing shot OU close], [ambiente físico detalhado], [luz e reflexos], [câmera: ${cam}], [movimento de elementos naturais: água, fogo, fumaça], [duração: ${dur}]\n- Para fly-through ou 3D: descreva o percurso de câmera ponto a ponto\n- Inclua: profundidade, perspectiva, velocidade do movimento\n- Aspect ratio: ${ratio} | Loop: [yes/no]\n- Escreva APENAS o prompt, sem explicações`,
-
-    pika: `REGRAS DO PIKA 2.0:\n- Escreva em inglês — seja direto e conciso (Pika funciona melhor com prompts curtos e objetivos)\n- Estrutura: [sujeito + ação], [ambiente], [estilo visual], [câmera: ${cam}]\n- Para animação de foto: descreva APENAS o movimento desejado: "hair blowing in wind", "eyes blinking slowly"\n- Para efeitos especiais: use os Pikaffects: "explosion", "melt", "inflate", "crush" etc\n- Duração máxima: ${dur} | Aspect ratio: ${ratio}\n- Motion intensity: [1-4] — recomendo 2 para movimentos naturais\n- Negative prompt: blurry, watermark, text\n- Escreva APENAS o prompt, sem explicações`,
-  };
-
-  const rules = promptRules[prIA] || '';
-  const mainPrompt = `Você é especialista em criar prompts profissionais para ferramentas de IA generativa.
-
-Crie um prompt PROFISSIONAL E DETALHADO para ${info.name} baseado nesta ideia:
+  const imgRules = `Você é especialista em prompts para IAs de imagem (Midjourney, FLUX, DALL-E).
+Crie um prompt universal de imagem otimizado — estruturado para funcionar nas principais ferramentas.
 
 IDEIA: ${ideia}
 ESTILO/REFERÊNCIA: ${estilo || 'não especificado'}
 PROPORÇÃO: ${ratio}
-${prTipo === 'vid' ? `DURAÇÃO: ${dur}\nMOVIMENTO DE CÂMERA: ${cam}` : ''}
 
-${rules}
+ESTRUTURA OBRIGATÓRIA (em inglês):
+1. Sujeito principal com atributos físicos precisos
+2. Ambiente/cenário com detalhes espaciais
+3. Iluminação: tipo, direção, intensidade, cor
+4. Estilo visual + referência artística se houver
+5. Câmera: lente (ex: 85mm f/1.4), enquadramento, profundidade de campo
+6. Mood/atmosfera em 2-3 adjetivos poderosos
+7. Qualidade: ultra-detailed, 8k, award-winning photography, masterpiece
+8. Aspect ratio: ${ratio}
 
-Entregue APENAS o prompt final otimizado, pronto para copiar e colar na ferramenta.
-Não inclua explicações, títulos ou comentários — só o prompt.
-Escreva em inglês (exceto DALL-E e Firefly que aceitam português).`;
+Entregue APENAS o prompt final em inglês, sem títulos, explicações ou comentários.`;
 
-  const result = await ai(mainPrompt);
-  renderPromptResult('pr-out', info, result);
+  const vidRules = `Você é especialista em prompts para IAs de vídeo (Kling, Runway, Veo, Seedance).
+Crie um prompt universal de vídeo otimizado — estruturado para funcionar nas principais ferramentas.
+
+IDEIA: ${ideia}
+ESTILO/REFERÊNCIA: ${estilo || 'não especificado'}
+PROPORÇÃO: ${ratio}
+DURAÇÃO: ${dur}
+CÂMERA: ${cam}
+
+ESTRUTURA OBRIGATÓRIA (em inglês):
+1. Shot type + sujeito com aparência física detalhada
+2. Ação ESPECÍFICA: não "she moves" mas "she slowly turns her head to the left, hair falls across face"
+3. Física dos elementos: como a roupa reage, expressão, velocidade
+4. Câmera: ${cam} — descreva o movimento em detalhes técnicos
+5. Ambiente + iluminação cinematográfica
+6. Color grading: "teal and orange, cinematic LUT, shallow depth of field"
+7. Duração: ${dur} | Aspect ratio: ${ratio} | Quality: 4K, cinematic
+8. Negative prompt: blurry, distorted, low quality, artifacts, watermark
+
+Entregue APENAS o prompt final em inglês, sem títulos, explicações ou comentários.`;
+
+  const result = await ai(prTipo === 'img' ? imgRules : vidRules);
+  renderPromptResult('pr-out', prTipo, result);
   setBtn('pr-btn', false);
 }
 
-function renderPromptResult(elId, info, text) {
+function renderPromptResult(elId, tipo, text) {
   const el = document.getElementById(elId);
-  const isErr = text.startsWith('⚠');
-  if (isErr) { renderOut(elId, text); return; }
+  if (!text || text.startsWith('⚠')) { renderOut(elId, text); return; }
+  const label = tipo === 'img' ? '🖼 Prompt de Imagem' : '🎬 Prompt de Vídeo';
   el.innerHTML = `
     <div class="prompt-result">
       <div class="prompt-result-head">
-        <span class="prompt-result-label">✦ Prompt para ${escHtml(info.name)}</span>
-        <span style="font-size:18px">${info.icon}</span>
+        <span class="prompt-result-label">✦ ${label}</span>
+        <button class="btn-ghost" onclick="navigator.clipboard.writeText(${JSON.stringify(text)}).then(()=>this.textContent='✓ Copiado!').catch(()=>{})" style="font-size:11px">📋 Copiar</button>
       </div>
       <div class="prompt-box">${escHtml(text)}</div>
-      <div class="prompt-actions">
-        <button class="btn" style="padding:8px 18px;font-size:12.5px" onclick="copyPrompt(this,${JSON.stringify(text)})">Copiar prompt</button>
-      </div>
-      <div class="prompt-tip">💡 ${escHtml(info.tip)}</div>
+      <div class="prompt-tip">💡 Cole este prompt direto na ferramenta de IA de sua preferência.</div>
     </div>`;
 }
+
+// ── PROMPT JSON BUILDER ───────────────────────────────────────────────────────
+function pjVal(id) { return (document.getElementById(id)||{}).value || ''; }
+function pjArr(id) { return pjVal(id) ? pjVal(id).split(',').map(s=>s.trim()).filter(Boolean) : []; }
+
+function pjBuild() {
+  const j = {
+    context: { type: pjVal('pj-type'), goal: pjVal('pj-goal') },
+    subject: { main: pjVal('pj-subject-main'), description: pjVal('pj-subject-desc'), attributes: pjArr('pj-subject-attr'), style: pjVal('pj-subject-style') },
+    action:  { primary: pjVal('pj-action-primary'), secondary: pjVal('pj-action-secondary'), timing: pjVal('pj-action-timing') },
+    environment: { location: pjVal('pj-env-location'), time: pjVal('pj-env-time') || undefined, atmosphere: pjVal('pj-env-atm') },
+    visual:  { style: pjVal('pj-vis-style'), reference: pjVal('pj-vis-ref'), realism: pjVal('pj-vis-real'), details: pjVal('pj-vis-detail') },
+    lighting: { type: pjVal('pj-light-type'), direction: pjVal('pj-light-dir'), intensity: pjVal('pj-light-int'), color: pjVal('pj-light-color') },
+    camera:  { angle: pjVal('pj-cam-angle'), lens: pjVal('pj-cam-lens'), movement: pjVal('pj-cam-move'), framing: pjVal('pj-cam-frame') },
+    color:   { grading: pjVal('pj-color-grade'), palette: pjArr('pj-color-palette'), contrast: pjVal('pj-color-contrast'), saturation: pjVal('pj-color-sat') },
+    technical: { resolution: pjVal('pj-tech-res'), quality: 'ultra', aspect_ratio: pjVal('pj-tech-ar'), duration: pjVal('pj-tech-dur'), fps: pjVal('pj-tech-fps') },
+    constraints: { must_have: pjArr('pj-must'), avoid: pjArr('pj-avoid') },
+    consistency: { style_lock: true, character_lock: true }
+  };
+  // Remove empty string values for cleanliness
+  function clean(obj) {
+    if (Array.isArray(obj)) return obj;
+    if (typeof obj === 'object' && obj !== null) {
+      const out = {};
+      for (const [k,v] of Object.entries(obj)) {
+        if (v === '' || v === undefined || v === null) continue;
+        if (Array.isArray(v) && v.length === 0) continue;
+        if (typeof v === 'object' && !Array.isArray(v)) {
+          const cleaned = clean(v);
+          if (Object.keys(cleaned).length > 0) out[k] = cleaned;
+        } else { out[k] = v; }
+      }
+      return out;
+    }
+    return obj;
+  }
+  return clean(j);
+}
+
+function pjUpdate() {
+  const j = pjBuild();
+  document.getElementById('pj-json-preview').textContent = JSON.stringify(j, null, 2);
+}
+
+function pjCopyJson() {
+  const text = document.getElementById('pj-json-preview').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    btn.textContent = '✓ Copiado!';
+    setTimeout(() => btn.textContent = '📋 Copiar JSON', 1800);
+  }).catch(() => {});
+}
+
+async function pjGenPrompt() {
+  const j = pjBuild();
+  if (!j.subject?.main && !j.context) { alert('Preencha ao menos o sujeito principal.'); return; }
+  const btn = event.target;
+  btn.disabled = true; btn.textContent = '⏳ Gerando...';
+
+  const prompt = `Você é especialista em prompts para IAs generativas de ${j.context?.type || 'imagem'}.
+
+Com base neste JSON estruturado, gere um prompt profissional otimizado em inglês:
+
+${JSON.stringify(j, null, 2)}
+
+Regras:
+- Escreva em inglês
+- Use toda a informação do JSON de forma fluída e natural
+- Estruture como um prompt profissional pronto para usar
+- Para imagem: inclua parâmetros técnicos de câmera, iluminação e qualidade
+- Para vídeo: seja específico nas ações, movimento de câmera e física dos elementos
+- Finalize com qualidade: ultra-detailed, 8K, cinematic, award-winning
+- Entregue APENAS o prompt final, sem explicações ou comentários`;
+
+  const result = await ai(prompt);
+  btn.disabled = false; btn.textContent = '✦ Gerar Prompt do JSON →';
+  renderPromptResult('pj-out', j.context?.type === 'video' ? 'vid' : 'img', result);
+}
+
+// Init JSON preview on load
+document.addEventListener('DOMContentLoaded', pjUpdate);
 
 function copyPrompt(btn, text) {
   navigator.clipboard?.writeText(text);

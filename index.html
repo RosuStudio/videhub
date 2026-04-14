@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>VIDEHUB Studio</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0c10;--surface:#131318;--card:#1a1a22;--card2:#1e1e28;
+  --border:#24242e;--border2:#32323e;
+  --accent:#f59e0b;--acc-bg:rgba(245,158,11,0.09);--acc-br:rgba(245,158,11,0.28);
+  --green:#10b981;--gr-bg:rgba(16,185,129,0.07);--gr-br:rgba(16,185,129,0.22);
+  --blue:#3b82f6;--bl-bg:rgba(59,130,246,0.08);--bl-br:rgba(59,130,246,0.25);
+  --purple:#8b5cf6;--pu-bg:rgba(139,92,246,0.08);--pu-br:rgba(139,92,246,0.25);
+  --red:#ef4444;
+  --text:#e2e2ec;--muted:#5a5a70;--dim:#28282e;
+}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
+/* Layout */
+#shell{display:flex;height:100vh;overflow:hidden}
+/* Sidebar */
+#sidebar{width:212px;min-width:212px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:18px 10px}
+#logo{padding:2px 10px 18px;border-bottom:1px solid var(--border);margin-bottom:14px}
+#logo .title{font-size:15px;font-weight:800;color:var(--accent);letter-spacing:-.03em}
+#logo .sub{font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:.06em;text-transform:uppercase}
+.nav-btn{width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:8px;padding:9px 10px;cursor:pointer;margin-bottom:2px;transition:all .12s;color:var(--text)}
+.nav-btn:hover{background:var(--dim)}
+.nav-btn.active{background:var(--acc-bg);border-color:var(--acc-br)}
+.nav-btn .nb-name{font-size:12.5px;font-weight:600;color:inherit;font-family:inherit}
+.nav-btn.active .nb-name{color:var(--accent)}
+.nav-btn .nb-sub{font-size:10.5px;color:var(--muted);margin-top:2px;font-family:inherit}
+#sidebar-foot{margin-top:auto;padding:14px 10px 0;border-top:1px solid var(--border);font-size:10px;color:var(--muted);line-height:1.6}
+/* Main */
+#main{flex:1;overflow-y:auto;padding:28px 32px}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+.tab-header{margin-bottom:20px}
+.tab-header h2{font-size:18px;font-weight:700;letter-spacing:-.025em;display:flex;align-items:center;gap:10px}
+.tab-header p{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.65}
+.sep{height:1px;background:var(--border);margin:18px 0}
+/* Form elements */
+.lbl{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.field{margin-bottom:15px}
+input[type=text],input[type=email],select,textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 13px;color:var(--text);font-size:13.5px;outline:none;font-family:inherit;transition:border-color .12s}
+input[type=text]:focus,select:focus,textarea:focus{border-color:var(--border2)}
+textarea{resize:vertical;line-height:1.65}
+select{cursor:pointer}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:15px}
+.btn{background:var(--accent);color:#0a0a0e;border:none;border-radius:8px;padding:10px 24px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:-.01em;transition:opacity .12s}
+.btn:hover{opacity:.88}
+.btn:disabled{background:var(--dim);color:var(--muted);cursor:not-allowed}
+.btn-ghost{background:transparent;border:1px solid var(--border);border-radius:5px;padding:4px 12px;color:var(--muted);font-size:11px;cursor:pointer;font-family:inherit}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+/* Result box */
+.result-box{margin-top:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.result-box.err{background:rgba(239,68,68,.05);border-color:rgba(239,68,68,.28)}
+.result-head{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border)}
+.result-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.result-box.err .result-label{color:var(--red)}
+.result-pre{padding:16px 18px;white-space:pre-wrap;color:var(--text);font-size:13.5px;line-height:1.78;font-family:inherit;max-height:460px;overflow-y:auto}
+/* Info/tip boxes */
+.tip{border-radius:8px;padding:10px 14px;font-size:12.5px;line-height:1.6;margin-bottom:12px}
+.tip.blue{background:var(--bl-bg);border:1px solid var(--bl-br);color:#93c5fd}
+.tip.amber{background:var(--acc-bg);border:1px solid var(--acc-br);color:var(--accent)}
+.tip.purple{background:var(--pu-bg);border:1px solid var(--pu-br);color:#c4b5fd}
+/* Drop zone */
+.drop-zone{border:2px dashed var(--border);border-radius:12px;padding:32px 20px;text-align:center;cursor:pointer;background:var(--card);transition:all .2s;margin-bottom:14px}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--accent);background:var(--acc-bg)}
+.drop-zone .dz-icon{font-size:32px;margin-bottom:10px}
+.drop-zone h3{font-size:14px;font-weight:700;margin-bottom:4px;color:var(--text)}
+.drop-zone p{font-size:12px;color:var(--muted)}
+/* File chip */
+.file-chip{background:var(--acc-bg);border:1px solid var(--acc-br);border-radius:9px;padding:11px 16px;display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.file-chip .fc-name{font-size:13px;font-weight:700;color:var(--accent);flex:1}
+.file-chip .fc-meta{font-size:11px;color:var(--muted);margin-top:2px}
+/* Audio chips list */
+.audio-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.audio-chip{background:var(--pu-bg);border:1px solid var(--pu-br);border-radius:8px;padding:9px 14px;display:flex;align-items:center;gap:10px}
+.audio-chip .ac-icon{font-size:18px}
+.audio-chip .ac-name{font-size:13px;font-weight:600;color:#c4b5fd;flex:1}
+.audio-chip .ac-meta{font-size:11px;color:var(--muted)}
+.audio-chip .ac-rm{background:transparent;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:0 4px}
+.audio-chip .ac-rm:hover{color:var(--red)}
+/* Checklist */
+.chk-phase-title{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.chk-item{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:7px;cursor:pointer;margin-bottom:3px;border:1px solid transparent;transition:all .14s}
+.chk-item:hover{background:var(--dim)}
+.chk-item.checked{background:var(--gr-bg);border-color:var(--gr-br)}
+.chk-box{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .14s}
+.chk-item.checked .chk-box{background:var(--green);border-color:var(--green)}
+.chk-check{font-size:10px;font-weight:800;color:#0a0a0e;display:none}
+.chk-item.checked .chk-check{display:block}
+.chk-label{font-size:13.5px;transition:all .14s}
+.chk-item.checked .chk-label{color:var(--muted);text-decoration:line-through}
+.progress-row{display:flex;align-items:center;gap:14px;margin-bottom:22px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px}
+.progress-bar{flex:1;background:var(--dim);border-radius:99px;height:5px;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .25s}
+.progress-fill.done{background:var(--green)}
+/* Nano Banana tab */
+.nb-setup{background:var(--acc-bg);border:1px solid var(--acc-br);border-radius:10px;padding:16px 18px;margin-bottom:18px}
+.nb-setup h3{font-size:13.5px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.nb-setup p{font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:10px}
+.nb-key-row{display:flex;gap:8px;align-items:center}
+.nb-key-row input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--text);font-size:13px;outline:none;font-family:inherit}
+.nb-key-save{background:var(--accent);color:#0a0a0e;border:none;border-radius:7px;padding:8px 16px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
+.nb-key-ok{background:var(--gr-bg);border:1px solid var(--gr-br);border-radius:10px;padding:10px 14px;font-size:12.5px;color:var(--green);display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.nb-result-box{margin-top:22px;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.nb-result-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.nb-result-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.nb-img-wrap{padding:16px;text-align:center}
+.nb-img-wrap img{max-width:100%;border-radius:8px;display:block;margin:0 auto}
+.nb-img-actions{display:flex;gap:8px;padding:0 16px 16px;justify-content:center}
+.nb-loading{padding:40px;text-align:center;color:var(--muted);font-size:13px}
+.nb-ratio-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:14px}
+.nb-ratio-btn{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:8px 6px;cursor:pointer;text-align:center;font-size:11.5px;color:var(--muted);font-family:inherit;transition:all .12s}
+.nb-ratio-btn.active{background:var(--acc-bg);border-color:var(--acc-br);color:var(--accent);font-weight:700}
+.nb-history{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+.nb-hist-img{border-radius:8px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:border-color .15s}
+.nb-hist-img:hover{border-color:var(--accent)}
+.nb-hist-img img{width:100%;display:block}
+/* Prompts IA tab */
+.tipo-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 22px;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--muted);font-family:inherit;transition:all .15s}
+.tipo-btn.active{background:var(--acc-bg);border-color:var(--acc-br);color:var(--accent)}
+.ia-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ia-card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:11px 13px;cursor:pointer;transition:all .15s}
+.ia-card:hover{border-color:var(--border2);background:var(--card2)}
+.ia-card.active{background:var(--acc-bg);border-color:var(--acc-br)}
+.ia-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;font-family:inherit}
+.ia-card.active .ia-name{color:var(--accent)}
+.ia-tag{font-size:10.5px;color:var(--muted);font-family:inherit}
+.ia-badge-row{display:flex;align-items:flex-start;gap:10px;background:var(--pu-bg);border:1px solid var(--pu-br);border-radius:9px;padding:11px 14px;margin-bottom:14px;margin-top:14px}
+.ia-badge-row span:first-child{font-size:18px;flex-shrink:0;margin-top:1px}
+#ia-badge-name{font-size:13px;font-weight:700;color:#c4b5fd;flex-shrink:0;margin-top:2px}
+.ia-badge-desc{font-size:11.5px;color:var(--muted);line-height:1.55;font-family:inherit}
+/* Prompt result card */
+.prompt-result{margin-top:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.prompt-result-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.prompt-result-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.prompt-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin:14px 16px 6px;font-size:14px;line-height:1.85;color:var(--text);white-space:pre-wrap;font-family:inherit}
+.prompt-actions{display:flex;gap:8px;padding:0 16px 14px}
+.prompt-tip{font-size:11.5px;color:var(--muted);padding:0 16px 14px;line-height:1.6}
+/* Roteiro card colapsável */
+.rot-card{margin-top:20px;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.rot-card-head{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;background:var(--surface);user-select:none;transition:background .12s}
+.rot-card-head:hover{background:var(--card)}
+.rot-card-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.rot-card-title{font-size:14px;font-weight:700;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rot-card-arrow{font-size:11px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.rot-card-arrow.open{transform:rotate(180deg)}
+.rot-card-body{display:none;padding:18px;border-top:1px solid var(--border);background:var(--surface)}
+.rot-card-body.open{display:block}
+.rot-card-body pre{white-space:pre-wrap;font-size:14px;line-height:1.9;color:var(--text);font-family:inherit}
+.rot-card-actions{display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px}
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:11px;height:11px;border:2px solid var(--accent);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px}
+</style>
+</head>
+<body>
+<div id="shell">
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside id="sidebar">
+  <div id="logo">
+    <div class="title">VIDEHUB</div>
+    <div class="sub">Studio de IA · by Claude</div>
+  </div>
+
+  <button class="nav-btn active" onclick="nav('roteiro',this)">
+    <div class="nb-name">✍️  Roteirista IA</div>
+    <div class="nb-sub">Cria roteiro do zero</div>
+  </button>
+  <button class="nav-btn" onclick="nav('shotlist',this)">
+    <div class="nb-name">🎬  Shot List</div>
+    <div class="nb-sub">Roteiro → lista de cenas</div>
+  </button>
+  <button class="nav-btn" onclick="nav('corte',this)">
+    <div class="nb-name">✂️  Guia de Corte</div>
+    <div class="nb-sub">Envie o vídeo + roteiro</div>
+  </button>
+  <button class="nav-btn" onclick="nav('lut',this)">
+    <div class="nb-name">🎨  LUT & Cor</div>
+    <div class="nb-sub">Grading para CapCut Pro</div>
+  </button>
+  <button class="nav-btn" onclick="nav('sfx',this)">
+    <div class="nb-name">🔊  Efeitos Sonoros</div>
+    <div class="nb-sub">SFX por cena + vídeo</div>
+  </button>
+  <button class="nav-btn" onclick="nav('master',this)">
+    <div class="nb-name">🎚️  Masterização</div>
+    <div class="nb-sub">Áudio profissional</div>
+  </button>
+  <button class="nav-btn" onclick="nav('copy',this)">
+    <div class="nb-name">📱  Copy Social</div>
+    <div class="nb-sub">Título + desc + hashtags</div>
+  </button>
+  <button class="nav-btn" onclick="nav('nanobana',this)">
+    <div class="nb-name">🍌  Nano Banana</div>
+    <div class="nb-sub">Gerar imagem com IA</div>
+  </button>
+  <button class="nav-btn" onclick="nav('prompts',this)">
+    <div class="nb-name">🤖  Prompts para IA</div>
+    <div class="nb-sub">Imagem e vídeo — top IAs</div>
+  </button>
+  <button class="nav-btn" onclick="nav('checklist',this)">
+    <div class="nb-name">✅  Checklist</div>
+    <div class="nb-sub">Entrega sem erros</div>
+  </button>
+
+  <div id="sidebar-foot">Powered by Claude AI<br>Feito para videomakers 🎥</div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main id="main">
+
+<!-- ── ROTEIRISTA ── -->
+<div id="tab-roteiro" class="tab-pane active">
+  <div class="tab-header">
+    <h2><span>✍️</span> Roteirista IA</h2>
+    <p>Gere roteiros completos com gancho, blocos e CTA a partir do tema. Funciona para YouTube, Reels e TikTok.</p>
+  </div>
+  <div class="sep"></div>
+  <div class="field"><div class="lbl">Tema ou título do vídeo</div>
+    <input type="text" id="r-tema" placeholder="Ex: 5 erros que todo videomaker iniciante comete"/></div>
+  <div class="grid2">
+    <div class="field" style="margin-bottom:0"><div class="lbl">Duração estimada</div>
+      <select id="r-dur">
+        <option>30–60 segundos (Reels/Shorts)</option>
+        <option>1–2 minutos</option>
+        <option selected>3–5 minutos</option>
+        <option>7–10 minutos</option>
+        <option>15–20 minutos</option>
+      </select></div>
+    <div class="field" style="margin-bottom:0"><div class="lbl">Tom do vídeo</div>
+      <select id="r-tom">
+        <option>Informativo e direto</option>
+        <option>Descontraído e pessoal</option>
+        <option>Educativo passo a passo</option>
+        <option>Motivacional</option>
+        <option>Humor</option>
+        <option>Review crítico</option>
+      </select></div>
+  </div>
+  <div class="field"><div class="lbl">Informações extras (opcional)</div>
+    <input type="text" id="r-extra" placeholder="Ex: mencionar experiência pessoal, citar produto X..."/></div>
+  <button class="btn" id="r-btn" onclick="runRoteiro()">Gerar Roteiro →</button>
+  <div id="r-out"></div>
+</div>
+
+<!-- ── SHOT LIST ── -->
+<div id="tab-shotlist" class="tab-pane">
+  <div class="tab-header">
+    <h2><span>🎬</span> Shot List</h2>
+    <p>Converta seu roteiro em uma shot list numerada com tipo de plano, ângulo e duração estimada de cada cena.</p>
+  </div>
+  <div class="sep"></div>
+  <div class="field"><div class="lbl">Cole o roteiro aqui</div>
+    <textarea id="sl-rot" rows="10" placeholder="Cole aqui o roteiro completo do vídeo..."></textarea></div>
+  <button class="btn" id="sl-btn" onclick="runShotlist()">Gerar Shot List →</button>
+  <div id="sl-out"></div>
+</div>
+
+<!-- ── GUIA DE CORTE ── -->
+<div id="tab-corte" class="tab-pane">
+  <div class="tab-header">
+    <h2><span>✂️</span> Guia de Corte</h2>
+    <p>Envie o vídeo e cole o roteiro + transcrição. A IA sugere timecodes, reorganização, b-roll e o que remover.</p>
+  </div>
+  <div class="sep"></div>
+
+  <div class="tip blue">💡 <strong>Transcrição:</strong> No CapCut Pro vá em Texto → Auto-legenda → selecione tudo → copie aqui.</div>
+
+  <!-- Video drop zone -->
+  <div id="corte-dz" class="drop-zone"
+    ondragover="event.preventDefault();this.classList.add('drag')"
+    ondragleave="this.classList.remove('drag')"
+    ondrop="dropVideo(event,'corte')"
+    onclick="document.getElementById('corte-fi').click()">
+    <input id="corte-fi" type="file" accept="video/*" style="display:none" onchange="loadVideo(this.files[0],'corte')"/>
+    <div class="dz-icon">🎬</div>
+    <h3>Arraste o vídeo aqui ou clique para escolher</h3>
+    <p>MP4, MOV, AVI — do iPhone ou qualquer câmera (opcional, mas melhora a análise)</p>
+  </div>
+  <div id="corte-chip" style="display:none" class="file-chip">
+    <span style="font-size:26px">🎬</span>
+    <div style="flex:1">
+      <div class="fc-name" id="corte-fname"></div>
+      <div class="fc-meta" id="corte-fmeta"></div>
+    </div>
+    <button class="btn-ghost" onclick="clearVideo('corte')">Remover</button>
+  </div>
+
+  <div class="field"><div class="lbl">Roteiro que você escreveu antes de gravar</div>
+    <textarea id="co-rot" rows="4" placeholder="Cole o roteiro original planejado..."></textarea></div>
+  <div class="field"><div class="lbl">Transcrição do vídeo gravado</div>
+    <textarea id="co-trans" rows="5" placeholder="Cole a transcrição do que você falou no vídeo..."></textarea></div>
+  <button class="btn" id="co-btn" onclick="runCorte()">Analisar e sugerir cortes →</button>
+  <div id="co-out"></div>
+</div>
+
+<!-- ── LUT & COR ── -->
+<div id="tab-lut" class="tab-pane">
+  <div class="tab-header">
+    <h2><span>🎨</span> LUT & Cor</h2>
+    <p>Descreva o estilo visual e receba recomendação de LUT com passo a passo para aplicar no CapCut Pro.</p>
+  </div>
+  <div class="sep"></div>
+  <div class="field"><div class="lbl">Estilo visual que você quer</div>
+    <input type="text" id="l-estilo" placeholder="Ex: cinematográfico escuro, clean e minimalista, tons quentes vintage..."/></div>
+  <div class="grid2">
+    <div class="field" style="margin-bottom:0"><div class="lbl">Referência (canal, filme, criador)</div>
+      <input type="text" id="l-ref" placeholder="Ex: Peter McKinnon, Stranger Things..."/></div>
+    <div class="field" style="margin-bottom:0"><div class="lbl">Ambiente de gravação</div>
+      <select id="l-amb">
+        <option>Interno com luz natural</option>
+        <option>Interno com luz artificial</option>
+        <option>Externo dia ensolarado</option>
+        <option>Externo dia nublado</option>
+        <option>Externo noite / pouca luz</option>
+        <option>Studio com luz controlada</option>
+      </select></div>
+  </div>
+  <div style="height:15px"></div>
+  <button class="btn" id="l-btn" onclick="runLUT()">Recomendar LUT →</button>
+  <div id="l-out"></div>
+</div>
+
+<!-- ── EFEITOS SONOROS ── -->
+<div id="tab-sfx" class="tab-pane">
+  <div class="tab-header">
+    <h2><span>🔊</span> Efeitos Sonoros</h2>
+    <p>Envie o vídeo e/ou descreva as cenas. A IA sugere SFX específicos com fontes gratuitas e como aplicar no CapCut Pro.</p>
+  </div>
+  <div class="sep"></div>
+
+  <!-- Video drop zone -->
+  <div id="sfx-dz" class="drop-zone"
+    ondragover="event.preventDefault();this.classList.add('drag')"
+    ondragleave="this.classList.remove('drag')"
+    ondrop="dropVideo(event,'sfx')"
+    onclick="document.getElementById('sfx-fi').click()">
+    <input id="sfx-fi" type="file" accept="video/*" style="display:none" onchange="loadVideo(this.files[0],'sfx')"/>
+    <div class="dz-icon">🎬</div>
+    <h3>Arraste o vídeo aqui ou clique para escolher</h3>
+    <p>Opcional — enviar o vídeo torna as sugestões de SFX muito mais precisas</p>
+  </div>
+  <div id="sfx-chip" style="display:none" class="file-chip">
+    <span style="font-size:26px">🎬</span>
+    <div style="flex:1">
+      <div class="fc-name" id="sfx-fname"></div>
+      <div class="fc-meta" id="sfx-fmeta"></div>
+    </div>
+    <button class="btn-ghost" onclick="clearVideo('sfx')">Remover</button>
+  </div>
+
+  <div class="field"><div class="lbl">Descreva as cenas do seu vídeo</div>
+    <textarea id="sfx-cenas" rows="7" placeholder="Descreva cada cena separada por linha. Ex:&#10;&#10;Cena 1: Abertura com logo aparecendo, estilo impactante&#10;Cena 2: Pessoa caminhando em rua movimentada&#10;Cena 3: Transição rápida entre imagens de produtos&#10;Cena 4: Close nas mãos digitando no teclado&#10;Cena 5: Final com texto 'Inscreva-se' aparecendo"></textarea></div>
+  <button class="btn" id="sfx-btn" onclick="runSFX()">Gerar lista de SFX →</button>
+  <div id="sfx-out"></div>
+</div>
+
+<!-- ── MASTERIZAÇÃO ── -->
+<div id="tab-master" class="tab-pane">
+  <div class="tab-header">
+    <h2><span>🎚️</span> Masterização de Som</h2>
+    <p>Envie seus arquivos de áudio e receba configurações profissionais de masterização para vídeos — EQ, compressão, limitador e targets de loudness por plataforma.</p>
+  </div>
+  <div class="sep"></div>
+
+  <div class="tip purple">🎵 Envie trilha, narração, SFX — qualquer áudio do seu projeto. A IA analisa cada arquivo e entrega um guia profissional de masterização para aplicar no CapCut Pro ou Adobe Audition.</div>
+
+  <!-- Audio drop zone -->
+  <div id="master-dz" class="drop-zone"
+    ondragover="event.preventDefault();this.classList.add('drag')"
+    ondragleave="this.classList.remove('drag')"
+    ondrop="dropAudio(event)"
+    onclick="document.getElementById('master-fi').click()">
+    <input id="master-fi" type="file" accept="audio/*,video/*" multiple style="display:none" onchange="loadAudios(this.files)"/>
+    <div class="dz-icon">🎵</div>
+    <h3>Arraste os arquivos de áudio aqui ou clique</h3>
+    <p>MP3, WAV, AAC, M4A — pode enviar vários de uma vez</p>
+  </div>
+  <div id="audio-list" class="audio-list"></div>
+
+  <div class="grid2">
+    <div class="field" style="margin-bottom:0"><div class="lbl">Tipo de conteúdo</div>
+      <select id="m-tipo">
+        <option>Narração / Voz principal</option>
+        <option>Trilha sonora de fundo</option>
+        <option>Efeito sonoro (SFX)</option>
+        <option>Mix completo do vídeo</option>
+        <option>Intro / Vinheta</option>
+        <option>Podcast / Entrevista</option>
+      </select></div>
+    <div class="field" style="margin-bottom:0"><div class="lbl">Plataforma de destino</div>
+      <select id="m-plat">
+        <option>YouTube</option>
+        <option>Instagram Reels</option>
+        <option>TikTok</option>
+        <option>YouTube Shorts</option>
+        <option>Spotify / Podcast</option>
+      </select></div>
+  </div>
+  <div class="field"><div class="lbl">Estilo / referência sonora (opcional)</div>
+    <input type="text" id="m-ref" placeholder="Ex: som limpo como MrBeast, voz aquecida como podcast Joe Rogan, trilha tensa como documentário Netflix..."/></div>
+  <div class="field"><div class="lbl">Problema que você sente no áudio (opcional)</div>
+    <input type="text" id="m-prob" placeholder="Ex: muito baixo, voz abafada, muito agudo, parece gravado em banheiro..."/></div>
+  <div style="height:4px"></div>
+  <button class="btn" id="m-btn" onclick="runMaster()">Masterizar com IA →</button>
+  <div id="m-out"></div>
+</div>
+
+<!-- ── COPY SOCIAL ── -->
+<div id="tab-copy" class="tab-pane">
+  <div class="tab-header">
+    <h2><span>📱</span> Copy Social</h2>
+    <p>Cole o roteiro e gere título SEO, descrição, hashtags e copy para YouTube, Reels e TikTok.</p>
+  </div>
+  <div class="sep"></div>
+  <div class="field"><div class="lbl">Plataforma</div>
+    <select id="cp-plat" style="width:auto">
+      <option>YouTube</option>
+      <option>Instagram Reels</option>
+      <option>TikTok</option>
+      <option>YouTube Shorts</option>
+    </select></div>
+  <div class="field"><div class="lbl">Cole o roteiro do vídeo</div>
+    <textarea id="cp-rot" rows="8" placeholder="Cole o roteiro completo para gerar título, descrição e hashtags otimizados..."></textarea></div>
+  <button class="btn" id="cp-btn" onclick="runCopy()">Gerar copy →</button>
+  <div id="cp-out"></div>
+</div>
+
+<!-- ── NANO BANANA ── -->
+<div id="tab-nanobana" class="tab-pane">
+  <div class="tab-header">
+    <h2><span>🍌</span> Nano Banana — Gerador de Imagem IA</h2>
+    <p>Digite o prompt, escolha o formato e gere a imagem direto aqui no hub. Powered by Google Gemini.</p>
+  </div>
+  <div class="sep"></div>
+
+  <!-- Setup de API key -->
+  <div id="nb-setup-box" class="nb-setup">
+    <h3>⚙️ Configuração única — chave do Google AI Studio</h3>
+    <p>Para gerar imagens você precisa de uma chave de API do Google. É rápido e custa centavos por imagem.<br>
+    <strong>Como conseguir:</strong> Acesse <strong>aistudio.google.com</strong> → clique em "Get API key" → crie um projeto → ative faturamento (adicione um cartão, mas é cobrado por uso — ~$0.004 por imagem).</p>
+    <div class="nb-key-row">
+      <input type="password" id="nb-apikey" placeholder="Cole sua chave aqui: AIza..."/>
+      <button class="nb-key-save" onclick="saveNBKey()">Salvar chave</button>
+    </div>
+  </div>
+  <div id="nb-key-ok" class="nb-key-ok" style="display:none">
+    <span>✓</span><span>Chave configurada. Pronto para gerar imagens!</span>
+    <button class="btn-ghost" style="margin-left:auto" onclick="changeNBKey()">Trocar chave</button>
+  </div>
+
+  <!-- Prompt -->
+  <div class="field">
+    <div class="lbl">Prompt da imagem</div>
+    <div class="tip amber" style="margin-bottom:8px">💡 Dica: use a aba <strong>Prompts para IA</strong> para gerar um prompt otimizado e cole aqui.</div>
+    <textarea id="nb-prompt" rows="5" placeholder="Descreva a imagem que você quer gerar. Pode escrever em português ou inglês.&#10;&#10;Ex: Uma videomaker jovem filmando uma rua movimentada de São Paulo ao entardecer, câmera na mão, estilo cinematográfico, luz dourada, 4K..."></textarea>
+  </div>
+
+  <!-- Proporção -->
+  <div class="field">
+    <div class="lbl">Proporção / formato</div>
+    <div class="nb-ratio-grid">
+      <button class="nb-ratio-btn" onclick="setNBRatio('1:1',this)">1:1<br><span style="font-size:9px">Instagram</span></button>
+      <button class="nb-ratio-btn active" onclick="setNBRatio('16:9',this)">16:9<br><span style="font-size:9px">YouTube</span></button>
+      <button class="nb-ratio-btn" onclick="setNBRatio('9:16',this)">9:16<br><span style="font-size:9px">Reels</span></button>
+      <button class="nb-ratio-btn" onclick="setNBRatio('4:3',this)">4:3<br><span style="font-size:9px">Clássico</span></button>
+      <button class="nb-ratio-btn" onclick="setNBRatio('4:5',this)">4:5<br><span style="font-size:9px">Feed</span></button>
+    </div>
+  </div>
+
+  <!-- Estilo rápido -->
+  <div class="field">
+    <div class="lbl">Qualidade / estilo extra (opcional)</div>
+    <input type="text" id="nb-style" placeholder="Ex: ultra-detailed, cinematic lighting, photorealistic, 8K, shot on Sony A7IV..."/>
+  </div>
+
+  <button class="btn" id="nb-btn" onclick="runNanoBanana()" style="width:100%;padding:14px;font-size:14px">
+    🍌  Gerar imagem com Nano Banana →
+  </button>
+
+  <!-- Resultado -->
+  <div id="nb-out"></div>
+
+  <!-- Histórico da sessão -->
+  <div id="nb-history-section" style="display:none;margin-top:28px">
+    <div class="lbl">Imagens geradas nesta sessão</div>
+    <div id="nb-history" class="nb-history"></div>
+  </div>
+</div>
+
+<!-- ── PROMPTS PARA IA ── -->
+<div id="tab-prompts" class="tab-pane">
+  <div class="tab-header">
+    <h2><span>🤖</span> Prompts para IA</h2>
+    <p>Descreva sua ideia, escolha a IA e receba um prompt profissional otimizado para aquela ferramenta específica.</p>
+  </div>
+  <div class="sep"></div>
+
+  <!-- Tipo: Imagem ou Vídeo -->
+  <div class="field">
+    <div class="lbl">Tipo de conteúdo</div>
+    <div id="tipo-row" style="display:flex;gap:10px">
+      <button id="tipo-img-btn" class="tipo-btn active" onclick="setTipo('img')">🖼 Imagem</button>
+      <button id="tipo-vid-btn" class="tipo-btn" onclick="setTipo('vid')">🎬 Vídeo</button>
+    </div>
+  </div>
+
+  <!-- Seleção de IA -->
+  <div class="field">
+    <div class="lbl">Escolha a IA</div>
+    <div id="ia-grid-img" class="ia-grid">
+      <div class="ia-card active" id="ia-midjourney" onclick="selectIA('midjourney','img')">
+        <div class="ia-name">Midjourney v7</div>
+        <div class="ia-tag">Melhor qualidade artística</div>
+      </div>
+      <div class="ia-card" id="ia-flux" onclick="selectIA('flux','img')">
+        <div class="ia-name">FLUX 1.1 Pro</div>
+        <div class="ia-tag">Melhor fotorrealismo</div>
+      </div>
+      <div class="ia-card" id="ia-ideogram" onclick="selectIA('ideogram','img')">
+        <div class="ia-name">Ideogram 2.0</div>
+        <div class="ia-tag">Thumbnails com texto</div>
+      </div>
+      <div class="ia-card" id="ia-firefly" onclick="selectIA('firefly','img')">
+        <div class="ia-name">Adobe Firefly</div>
+        <div class="ia-tag">Uso comercial seguro</div>
+      </div>
+      <div class="ia-card" id="ia-dalle" onclick="selectIA('dalle','img')">
+        <div class="ia-name">DALL-E 3</div>
+        <div class="ia-tag">Mais fácil, via ChatGPT</div>
+      </div>
+      <div class="ia-card" id="ia-leonardo" onclick="selectIA('leonardo','img')">
+        <div class="ia-name">Leonardo AI</div>
+        <div class="ia-tag">Consistência de personagem</div>
+      </div>
+    </div>
+    <div id="ia-grid-vid" class="ia-grid" style="display:none">
+      <div class="ia-card active" id="ia-kling" onclick="selectIA('kling','vid')">
+        <div class="ia-name">Kling 3.0</div>
+        <div class="ia-tag">Melhor movimento humano</div>
+      </div>
+      <div class="ia-card" id="ia-seedance" onclick="selectIA('seedance','vid')">
+        <div class="ia-name">Seedance 2.0</div>
+        <div class="ia-tag">Direção + áudio nativo</div>
+      </div>
+      <div class="ia-card" id="ia-runway" onclick="selectIA('runway','vid')">
+        <div class="ia-name">Runway Gen-4</div>
+        <div class="ia-tag">Pós-produção profissional</div>
+      </div>
+      <div class="ia-card" id="ia-veo" onclick="selectIA('veo','vid')">
+        <div class="ia-name">Veo 3.1 (Google)</div>
+        <div class="ia-tag">Fotorrealismo + áudio sync</div>
+      </div>
+      <div class="ia-card" id="ia-luma" onclick="selectIA('luma','vid')">
+        <div class="ia-name">Luma Ray2</div>
+        <div class="ia-tag">Física e planos épicos</div>
+      </div>
+      <div class="ia-card" id="ia-pika" onclick="selectIA('pika','vid')">
+        <div class="ia-name">Pika 2.0</div>
+        <div class="ia-tag">Rápido para redes sociais</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Badge da IA selecionada -->
+  <div id="ia-badge" class="ia-badge-row">
+    <span id="ia-badge-icon">🎨</span>
+    <span id="ia-badge-name">Midjourney v7</span>
+    <span id="ia-badge-desc" class="ia-badge-desc">Melhor para: qualidade artística, cinematic mood, fashion, concept art. Usa pesos :: e parâmetros --ar --style --v</span>
+  </div>
+
+  <!-- Inputs -->
+  <div class="field">
+    <div class="lbl">Descreva sua ideia</div>
+    <textarea id="pr-ideia" rows="4" placeholder="Ex: uma mulher pintando um quadro em seu atelier, luz natural entrando pela janela, estilo cinematográfico e íntimo..."></textarea>
+  </div>
+  <div class="grid2">
+    <div class="field" style="margin-bottom:0">
+      <div class="lbl">Estilo / referência visual</div>
+      <input type="text" id="pr-estilo" placeholder="Ex: Peter McKinnon, Wes Anderson, fotografía analógica..."/>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <div class="lbl">Proporção / formato</div>
+      <select id="pr-ratio">
+        <option value="16:9">16:9 — Widescreen / YouTube</option>
+        <option value="9:16">9:16 — Vertical / Reels</option>
+        <option value="1:1">1:1 — Quadrado / Instagram</option>
+        <option value="4:3">4:3 — Clássico</option>
+        <option value="21:9">21:9 — Ultrawide / Cinemascope</option>
+        <option value="4:5">4:5 — Feed Instagram</option>
+      </select>
+    </div>
+  </div>
+  <div id="video-extras" style="display:none;margin-top:12px">
+    <div class="grid2">
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Duração do clipe</div>
+        <select id="pr-dur">
+          <option>5 segundos</option>
+          <option>10 segundos</option>
+          <option>15 segundos</option>
+          <option>30 segundos</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <div class="lbl">Movimento de câmera</div>
+        <select id="pr-cam">
+          <option>Câmera estática</option>
+          <option>Dolly in (aproximação)</option>
+          <option>Dolly out (afastamento)</option>
+          <option>Pan horizontal</option>
+          <option>Tilt vertical</option>
+          <option>Drone / bird's eye view</option>
+          <option>Handheld (tremido sutil)</option>
+          <option>Orbit / 360°</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div style="height:16px"></div>
+  <button class="btn" id="pr-btn" onclick="runPrompts()">✦ Gerar Prompt Profissional →</button>
+
+  <!-- Resultado com card colapsável por versão -->
+  <div id="pr-out"></div>
+</div>
+
+<!-- ── CHECKLIST ── -->
+<div id="tab-checklist" class="tab-pane">
+  <div class="tab-header">
+    <h2><span>✅</span> Checklist de Entrega</h2>
+    <p>Marque cada etapa antes de entregar. Nunca esqueça nada importante.</p>
+  </div>
+  <div class="sep"></div>
+  <div id="chk-progress" class="progress-row">
+    <div class="progress-bar"><div id="chk-fill" class="progress-fill" style="width:0%"></div></div>
+    <div id="chk-label" style="font-size:13px;font-weight:700;color:var(--accent);min-width:72px;text-align:right"></div>
+    <button class="btn-ghost" onclick="resetChecklist()">Resetar</button>
+  </div>
+  <div id="chk-body"></div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ── Navigation ───────────────────────────────────────────────────────────────
+function nav(id, btn) {
+  document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('main').scrollTop = 0;
+}
+
+// ── Claude API ───────────────────────────────────────────────────────────────
+async function ai(prompt) {
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1800,
+        messages: [{ role: 'user', content: prompt }] })
+    });
+    const d = await r.json();
+    if (d.error) return '⚠ Erro: ' + d.error.message;
+    return d.content.map(b => b.text || '').join('');
+  } catch (e) { return '⚠ Erro de conexão: ' + e.message; }
+}
+
+// ── Shared render ────────────────────────────────────────────────────────────
+function setBtn(id, loading) {
+  const b = document.getElementById(id);
+  b.disabled = loading;
+  if (loading) {
+    b.innerHTML = '<span class="spinner"></span>Gerando com IA...';
+  } else {
+    const labels = {
+      'r-btn':'Gerar Roteiro →','sl-btn':'Gerar Shot List →','co-btn':'Analisar e sugerir cortes →',
+      'l-btn':'Recomendar LUT →','sfx-btn':'Gerar lista de SFX →','m-btn':'Masterizar com IA →',
+      'cp-btn':'Gerar copy →'
+    };
+    b.innerHTML = labels[id] || 'Gerar →';
+  }
+}
+
+function renderOut(elId, text) {
+  const el = document.getElementById(elId);
+  const isErr = text.startsWith('⚠');
+  el.innerHTML = `
+    <div class="result-box${isErr?' err':''}">
+      <div class="result-head">
+        <span class="result-label">${isErr ? '⚠ Erro' : '✦ Resultado — Claude AI'}</span>
+        ${!isErr ? `<button class="btn-ghost" onclick="copyText(this, \`${text.replace(/`/g,'\\`')}\`)">Copiar</button>` : ''}
+      </div>
+      <pre class="result-pre">${escHtml(text)}</pre>
+    </div>`;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function copyText(btn, text) {
+  navigator.clipboard?.writeText(text);
+  btn.textContent = '✓ Copiado!';
+  setTimeout(() => btn.textContent = 'Copiar', 2000);
+}
+
+// ── File helpers ─────────────────────────────────────────────────────────────
+const videoMeta = {};
+
+function fmtDur(s) { if (!s) return '—'; const m = Math.floor(s/60), sec = Math.floor(s%60); return `${m}:${String(sec).padStart(2,'0')}`; }
+function fmtSize(b) { return b > 1e9 ? (b/1e9).toFixed(1)+' GB' : (b/1e6).toFixed(0)+' MB'; }
+
+function dropVideo(e, ns) { e.preventDefault(); document.getElementById(ns+'-dz').classList.remove('drag'); loadVideo(e.dataTransfer.files[0], ns); }
+function loadVideo(f, ns) {
+  if (!f) return;
+  const url = URL.createObjectURL(f);
+  const v = document.createElement('video'); v.src = url;
+  v.onloadedmetadata = () => { videoMeta[ns] = { name: f.name, size: f.size, dur: v.duration }; URL.revokeObjectURL(url); showVideoChip(ns); };
+  v.onerror = () => { videoMeta[ns] = { name: f.name, size: f.size, dur: 0 }; showVideoChip(ns); };
+}
+function showVideoChip(ns) {
+  const m = videoMeta[ns];
+  document.getElementById(ns+'-dz').style.display = 'none';
+  document.getElementById(ns+'-chip').style.display = 'flex';
+  document.getElementById(ns+'-fname').textContent = m.name;
+  document.getElementById(ns+'-fmeta').textContent = `${fmtSize(m.size)} · ${fmtDur(m.dur)}`;
+}
+function clearVideo(ns) {
+  delete videoMeta[ns];
+  document.getElementById(ns+'-dz').style.display = 'block';
+  document.getElementById(ns+'-chip').style.display = 'none';
+  document.getElementById(ns+'-fi').value = '';
+}
+
+// ── Audio for mastering ───────────────────────────────────────────────────────
+const audioFiles = [];
+
+function dropAudio(e) { e.preventDefault(); document.getElementById('master-dz').classList.remove('drag'); loadAudios(e.dataTransfer.files); }
+function loadAudios(files) {
+  for (const f of files) {
+    if (!audioFiles.find(a => a.name === f.name)) {
+      audioFiles.push({ name: f.name, size: f.size, type: f.type });
+    }
+  }
+  renderAudioList();
+}
+function removeAudio(name) {
+  const i = audioFiles.findIndex(a => a.name === name);
+  if (i >= 0) audioFiles.splice(i, 1);
+  renderAudioList();
+}
+function renderAudioList() {
+  const el = document.getElementById('audio-list');
+  if (!audioFiles.length) { el.innerHTML = ''; return; }
+  el.innerHTML = audioFiles.map(a => `
+    <div class="audio-chip">
+      <span class="ac-icon">🎵</span>
+      <div style="flex:1">
+        <div class="ac-name">${escHtml(a.name)}</div>
+        <div class="ac-meta">${fmtSize(a.size)}</div>
+      </div>
+      <button class="ac-rm" onclick="removeAudio('${escHtml(a.name)}')" title="Remover">✕</button>
+    </div>`).join('');
+}
+
+// ── Tab runners ──────────────────────────────────────────────────────────────
+async function runRoteiro() {
+  const tema = document.getElementById('r-tema').value.trim();
+  if (!tema) { alert('Digite o tema do vídeo.'); return; }
+  setBtn('r-btn', true);
+  const out = await ai(`Você é roteirista especializado em vídeos para YouTube e Instagram no Brasil.\n\nCrie um roteiro SOMENTE COM AS FALAS para um vídeo sobre: "${tema}"\nDuração: ${document.getElementById('r-dur').value} | Tom: ${document.getElementById('r-tom').value}\n${document.getElementById('r-extra').value.trim() ? 'Detalhes extras: ' + document.getElementById('r-extra').value.trim() : ''}\n\nREGRAS OBRIGATÓRIAS:\n— Escreva APENAS o que o apresentador vai FALAR em voz alta\n— PROIBIDO incluir direções de câmera, indicações de b-roll, [ações visuais] ou qualquer instrução técnica\n— Separe os blocos com títulos simples em maiúsculo: GANCHO / INTRODUÇÃO / DESENVOLVIMENTO / CTA\n— Dentro de cada bloco, escreva só o texto da fala, linha por linha, de forma natural\n— Escreva como se fosse uma pessoa falando de verdade, não um texto formal\n\nResponda em português brasileiro natural. Só as falas.`);
+  renderRoteiroCard('r-out', tema, out);
+  setBtn('r-btn', false);
+}
+
+function renderRoteiroCard(elId, titulo, text) {
+  const el = document.getElementById(elId);
+  const isErr = text.startsWith('⚠');
+  if (isErr) { renderOut(elId, text); return; }
+  const cardId = 'rot-body-' + Date.now();
+  const arrowId = 'rot-arrow-' + Date.now();
+  el.innerHTML = `
+    <div class="rot-card">
+      <div class="rot-card-head" onclick="toggleRoteiroCard('${cardId}','${arrowId}')">
+        <span class="rot-card-label">✦ Roteiro</span>
+        <span class="rot-card-title">${escHtml(titulo)}</span>
+        <span class="rot-card-arrow" id="${arrowId}">▼</span>
+      </div>
+      <div class="rot-card-body" id="${cardId}">
+        <div class="rot-card-actions">
+          <button class="btn-ghost" onclick="copyText(this,${JSON.stringify(text)})">Copiar tudo</button>
+        </div>
+        <pre>${escHtml(text)}</pre>
+      </div>
+    </div>`;
+}
+
+function toggleRoteiroCard(bodyId, arrowId) {
+  const body = document.getElementById(bodyId);
+  const arrow = document.getElementById(arrowId);
+  const open = body.classList.toggle('open');
+  arrow.classList.toggle('open', open);
+}
+
+async function runShotlist() {
+  const rot = document.getElementById('sl-rot').value.trim();
+  if (!rot) { alert('Cole o roteiro acima.'); return; }
+  setBtn('sl-btn', true);
+  const out = await ai(`Com base neste roteiro, crie uma shot list detalhada e numerada:\n\n${rot}\n\nPara cada plano inclua:\n— Nº do plano\n— Tipo: Close / Médio / Aberto / POV / Over-the-shoulder\n— O que aparece em quadro (descrição objetiva)\n— Duração estimada\n— Nota técnica (movimento de câmera, iluminação)\n\nGravo com iPhone 17 Pro Max. Seja específico e prático. Responda em português.`);
+  renderOut('sl-out', out);
+  setBtn('sl-btn', false);
+}
+
+async function runCorte() {
+  const rot = document.getElementById('co-rot').value.trim();
+  const trans = document.getElementById('co-trans').value.trim();
+  if (!rot && !trans) { alert('Cole pelo menos o roteiro ou a transcrição.'); return; }
+  setBtn('co-btn', true);
+  const vm = videoMeta['corte'];
+  const vidCtx = vm ? `\nARQUIVO DE VÍDEO: "${vm.name}" | Duração: ${fmtDur(vm.dur)} | Tamanho: ${fmtSize(vm.size)}` : '';
+  const out = await ai(`Você é editor de vídeo profissional. Analise e dê sugestões de corte.${vidCtx}\n\nROTEIRO PLANEJADO:\n${rot || '(não fornecido)'}\n\nTRANSCRIÇÃO DO VÍDEO GRAVADO:\n${trans || '(não fornecida)'}\n\nRetorne estruturado:\n1. ✂️ CORTES RECOMENDADOS — trechos para remover com justificativa\n2. 🔄 REORGANIZAÇÃO — se alguma cena ficaria melhor em outra ordem\n3. 🎥 B-ROLL — momentos onde inserir imagens de apoio\n4. ⚡ TRANSIÇÕES — quais tipos usar e onde (corte seco, fade, zoom)\n5. ⏸ PAUSAS E HESITAÇÕES — silêncios e gagueiras desnecessárias para cortar\n6. ⭐ PONTO FORTE — melhor momento para usar como gancho/preview\n7. ⏱ TEMPO ESTIMADO FINAL — duração estimada do vídeo editado\n\nSeja direto e prático. Responda em português brasileiro.`);
+  renderOut('co-out', out);
+  setBtn('co-btn', false);
+}
+
+async function runLUT() {
+  const estilo = document.getElementById('l-estilo').value.trim();
+  if (!estilo) { alert('Descreva o estilo visual que você quer.'); return; }
+  setBtn('l-btn', true);
+  const out = await ai(`Sou videomaker, gravo com iPhone 17 Pro Max e edito no CapCut Pro Desktop (Windows).\n\nEstilo visual que quero: ${estilo}\nReferência: ${document.getElementById('l-ref').value.trim() || 'não informado'}\nAmbiente de gravação: ${document.getElementById('l-amb').value}\n\nRetorne:\n1. 🎨 LUT RECOMENDADO — nome exato + onde baixar (grátis se possível)\n2. 🆓 ALTERNATIVA GRATUITA — disponível em Lutify.me, IWLTBAP ou Freesound\n3. ⚙️ CONFIGURAÇÕES — valores exatos de exposição, temperatura, contraste, saturação, sombras e realces no CapCut Pro\n4. 📋 PASSO A PASSO — como importar e aplicar o LUT no CapCut Pro Desktop em passos numerados\n5. 📱 DICA iPHONE — ajuste específico para vídeo do iPhone neste estilo visual\n\nResponda em português de forma clara e objetiva.`);
+  renderOut('l-out', out);
+  setBtn('l-btn', false);
+}
+
+async function runSFX() {
+  const cenas = document.getElementById('sfx-cenas').value.trim();
+  if (!cenas) { alert('Descreva as cenas do seu vídeo.'); return; }
+  setBtn('sfx-btn', true);
+  const vm = videoMeta['sfx'];
+  const vidCtx = vm ? `\nARQUIVO DE VÍDEO ENVIADO: "${vm.name}" | Duração: ${fmtDur(vm.dur)} | Tamanho: ${fmtSize(vm.size)}\n` : '';
+  const out = await ai(`Sou editor de vídeo no CapCut Pro (Windows).${vidCtx}\n\nCenas do vídeo:\n${cenas}\n\nPara cada cena retorne:\n🔊 EFEITO — nome em português E em inglês (para buscar online)\n⏱ QUANDO — momento exato para aplicar no vídeo\n🌐 ONDE BAIXAR — site gratuito específico (Freesound.org, Pixabay, Zapsplat.com, BBC Sound Effects)\n🔍 TERMO DE BUSCA — palavra-chave exata para encontrar no site\n🎛 COMO APLICAR — instrução rápida para o CapCut Pro\n🔉 VOLUME SUGERIDO — porcentagem relativa ao áudio principal\n\nSeja extremamente específico nos nomes. Não diga "som de passos" — diga "footsteps on wooden floor indoor close up". Responda em português.`);
+  renderOut('sfx-out', out);
+  setBtn('sfx-btn', false);
+}
+
+async function runMaster() {
+  const tipo = document.getElementById('m-tipo').value;
+  const plat = document.getElementById('m-plat').value;
+  const ref = document.getElementById('m-ref').value.trim();
+  const prob = document.getElementById('m-prob').value.trim();
+  const fileList = audioFiles.length
+    ? audioFiles.map(a => `• ${a.name} (${fmtSize(a.size)})`).join('\n')
+    : '(nenhum arquivo enviado — análise geral)';
+  setBtn('m-btn', true);
+  const out = await ai(`Você é engenheiro de áudio profissional especializado em masterização para vídeos digitais.\n\nARQUIVOS DE ÁUDIO PARA MASTERIZAR:\n${fileList}\n\nTipo de conteúdo: ${tipo}\nPlataforma de destino: ${plat}\nReferência sonora: ${ref || 'não informada'}\nProblema percebido: ${prob || 'não informado'}\nSoftware de edição: CapCut Pro Desktop (Windows) e/ou Adobe Audition\n\nEntregue um guia profissional completo de masterização:\n\n🎚 CADEIA DE PROCESSAMENTO — ordem exata dos plugins/processos a aplicar\n\n📊 EQ (EQUALIZAÇÃO)\n— Frequências para cortar (com valores em Hz e dB)\n— Frequências para realçar (com valores em Hz e dB)\n— Tipo de curva recomendada (shelf, bell, high-pass)\n\n🗜 COMPRESSÃO\n— Threshold (dB), Ratio, Attack (ms), Release (ms), Knee\n— Ganho de make-up sugerido\n\n🔊 LOUDNESS & LIMITADOR\n— Target LUFS para ${plat} (valor exato conforme padrão da plataforma)\n— True Peak máximo permitido\n— Configuração do limitador (ceiling)\n\n✨ PROCESSAMENTOS EXTRAS\n— De-noise: quando e como usar\n— Saturação / Exciter: recomendação\n— Stereo imaging: recomendação\n\n⚙️ PASSO A PASSO NO CAPCUT PRO\n— Instruções numeradas para aplicar tudo no CapCut Pro Desktop\n\n🎯 RESULTADO ESPERADO — descreva como o áudio vai soar depois\n\nSeja técnico, específico com valores numéricos e prático. Responda em português brasileiro.`);
+  renderOut('m-out', out);
+  setBtn('m-btn', false);
+}
+
+async function runCopy() {
+  const rot = document.getElementById('cp-rot').value.trim();
+  const plat = document.getElementById('cp-plat').value;
+  if (!rot) { alert('Cole o roteiro do vídeo.'); return; }
+  setBtn('cp-btn', true);
+  const ytPrompt = `Baseado neste roteiro:\n${rot}\n\nCrie copy otimizado para YouTube:\n1. 🏷 TÍTULO (3 opções) — max 60 chars, SEO, com número ou pergunta\n2. 📝 DESCRIÇÃO COMPLETA — 3-4 parágrafos com keywords, inclua [TIMESTAMPS AQUI]\n3. 🔖 TAGS — 20 tags separadas por vírgula\n4. 🖼 THUMBNAIL — sugestão de texto (max 3 palavras) e visual\n5. 📌 PRIMEIRO COMENTÁRIO — chamada para inscrição`;
+  const igPrompt = `Baseado neste roteiro:\n${rot}\n\nCrie copy para ${plat}:\n1. 📱 LEGENDA (3 opções) — hook forte na primeira linha, max 150 chars\n2. # HASHTAGS — 30 hashtags PT-BR + inglês\n3. 🕐 MELHOR HORÁRIO — dia e hora para postar\n4. 📲 STORY para divulgar o vídeo`;
+  const out = await ai((plat === 'YouTube' ? ytPrompt : igPrompt) + '\n\nResponda em português brasileiro.');
+  renderOut('cp-out', out);
+  setBtn('cp-btn', false);
+}
+
+// ── Nano Banana (Google Gemini Image) ────────────────────────────────────────
+let nbRatio = '16:9';
+const nbSession = []; // imagens desta sessão
+
+function initNB() {
+  const key = localStorage.getItem('nb_apikey');
+  if (key) {
+    document.getElementById('nb-setup-box').style.display = 'none';
+    document.getElementById('nb-key-ok').style.display = 'flex';
+  }
+}
+function saveNBKey() {
+  const k = document.getElementById('nb-apikey').value.trim();
+  if (!k) { alert('Cole a chave antes de salvar.'); return; }
+  localStorage.setItem('nb_apikey', k);
+  document.getElementById('nb-setup-box').style.display = 'none';
+  document.getElementById('nb-key-ok').style.display = 'flex';
+}
+function changeNBKey() {
+  localStorage.removeItem('nb_apikey');
+  document.getElementById('nb-apikey').value = '';
+  document.getElementById('nb-key-ok').style.display = 'none';
+  document.getElementById('nb-setup-box').style.display = 'block';
+}
+function setNBRatio(r, btn) {
+  nbRatio = r;
+  document.querySelectorAll('.nb-ratio-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function runNanoBanana() {
+  const key = localStorage.getItem('nb_apikey');
+  if (!key) { alert('Configure sua chave do Google AI Studio primeiro.'); return; }
+  const prompt = document.getElementById('nb-prompt').value.trim();
+  if (!prompt) { alert('Digite o prompt da imagem.'); return; }
+  const style = document.getElementById('nb-style').value.trim();
+  const fullPrompt = style ? `${prompt}. ${style}` : prompt;
+
+  const btn = document.getElementById('nb-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Gerando com Nano Banana...';
+
+  const out = document.getElementById('nb-out');
+  out.innerHTML = `<div class="nb-result-box"><div class="nb-loading"><span class="spinner"></span>Processando imagem — pode levar 10–20 segundos...</div></div>`;
+
+  try {
+    const body = {
+      contents: [{ parts: [{ text: fullPrompt }] }],
+      generationConfig: {
+        responseModalities: ['TEXT', 'IMAGE'],
+      }
+    };
+
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${key}`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+    );
+    const data = await res.json();
+
+    if (data.error) {
+      const msg = data.error.message || JSON.stringify(data.error);
+      out.innerHTML = renderNBError(msg);
+      btn.disabled = false; btn.innerHTML = '🍌  Gerar imagem com Nano Banana →';
+      return;
+    }
+
+    let imgB64 = null, caption = '';
+    const parts = data?.candidates?.[0]?.content?.parts || [];
+    for (const part of parts) {
+      if (part.inlineData?.data) imgB64 = part.inlineData.data;
+      if (part.text) caption = part.text;
+    }
+
+    if (!imgB64) {
+      out.innerHTML = renderNBError('Nenhuma imagem retornada. Verifique se a chave tem acesso ao modelo de imagens (requer faturamento ativo no Google Cloud).');
+      btn.disabled = false; btn.innerHTML = '🍌  Gerar imagem com Nano Banana →';
+      return;
+    }
+
+    const dataUrl = `data:image/png;base64,${imgB64}`;
+    nbSession.unshift({ dataUrl, prompt: fullPrompt });
+    renderNBResult(out, dataUrl, caption, fullPrompt);
+    renderNBHistory();
+
+  } catch (e) {
+    out.innerHTML = renderNBError('Erro de conexão: ' + e.message);
+  }
+  btn.disabled = false;
+  btn.innerHTML = '🍌  Gerar imagem com Nano Banana →';
+}
+
+function renderNBResult(el, dataUrl, caption, prompt) {
+  el.innerHTML = `
+    <div class="nb-result-box">
+      <div class="nb-result-head">
+        <span class="nb-result-label">🍌 Imagem gerada — Nano Banana</span>
+        <span style="font-size:10.5px;color:var(--muted)">${escHtml(nbRatio)}</span>
+      </div>
+      <div class="nb-img-wrap">
+        <img src="${dataUrl}" alt="Imagem gerada"/>
+        ${caption ? `<p style="font-size:12px;color:var(--muted);margin-top:10px;line-height:1.6">${escHtml(caption)}</p>` : ''}
+      </div>
+      <div class="nb-img-actions">
+        <button class="btn" style="padding:8px 18px;font-size:12.5px" onclick="downloadNBImg('${dataUrl}')">⬇ Baixar imagem</button>
+        <button class="btn-ghost" onclick="document.getElementById('nb-prompt').value=${JSON.stringify(prompt)};document.getElementById('nb-out').innerHTML=''">↺ Usar este prompt de novo</button>
+      </div>
+    </div>`;
+}
+
+function renderNBError(msg) {
+  const isQuota = msg.toLowerCase().includes('quota') || msg.toLowerCase().includes('billing') || msg.toLowerCase().includes('rate');
+  return `<div class="result-box err" style="margin-top:20px">
+    <div class="result-head"><span class="result-label">⚠ Erro na geração</span></div>
+    <pre class="result-pre">${escHtml(msg)}</pre>
+    ${isQuota ? `<pre class="result-pre" style="color:var(--accent)">💡 Solução: acesse console.cloud.google.com → APIs & Services → ative o faturamento na sua conta. O custo é ~R$0.02 por imagem.</pre>` : ''}
+  </div>`;
+}
+
+function downloadNBImg(dataUrl) {
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = `nanobana_${Date.now()}.png`;
+  a.click();
+}
+
+function renderNBHistory() {
+  if (!nbSession.length) return;
+  document.getElementById('nb-history-section').style.display = 'block';
+  document.getElementById('nb-history').innerHTML = nbSession.slice(0, 9).map(item =>
+    `<div class="nb-hist-img" title="${escHtml(item.prompt)}" onclick="document.getElementById('nb-prompt').value=${JSON.stringify(item.prompt)}">
+      <img src="${item.dataUrl}" alt="histórico"/>
+    </div>`
+  ).join('');
+}
+
+initNB();
+
+// ── Prompts IA ───────────────────────────────────────────────────────────────
+let prTipo = 'img';
+let prIA = 'midjourney';
+
+const IA_INFO = {
+  // Imagem
+  midjourney: { icon:'🎨', name:'Midjourney v7', desc:'Melhor para: qualidade artística, cinematic mood, fashion, concept art. Usa pesos :: e parâmetros --ar --style --v 7', tip:'Cole o prompt direto no Discord do Midjourney ou em midjourney.com' },
+  flux:       { icon:'📸', name:'FLUX 1.1 Pro',  desc:'Melhor para: fotorrealismo, comercial, produtos, retratos hiper-detalhados. Linguagem descritiva e técnica fotográfica', tip:'Acesse via fal.ai, Replicate ou Leonardo AI (modelo FLUX)' },
+  ideogram:   { icon:'🔤', name:'Ideogram 2.0',  desc:'Melhor para: thumbnails com texto legível, logos, posters, capas. O único que renderiza texto em imagem corretamente', tip:'Acesse em ideogram.ai — plano grátis com 10 gerações por semana' },
+  firefly:    { icon:'🔥', name:'Adobe Firefly', desc:'Melhor para: uso comercial seguro, integração com Photoshop, brand assets. Treinado em imagens licenciadas', tip:'Acesse via Adobe Creative Cloud, Photoshop ou firefly.adobe.com' },
+  dalle:      { icon:'🧠', name:'DALL-E 3',      desc:'Melhor para: facilidade de uso, conversacional, ilustrações variadas. Disponível direto no ChatGPT', tip:'Use direto no ChatGPT — basta pedir "gere uma imagem de..." e cole o prompt' },
+  leonardo:   { icon:'🦁', name:'Leonardo AI',   desc:'Melhor para: personagens consistentes, game art, product shots, múltiplas variações. 150 gerações grátis por dia', tip:'Acesse em leonardo.ai — crie conta grátis e use o modelo Flux Dev ou Phoenix' },
+  // Vídeo
+  kling:      { icon:'⚡', name:'Kling 3.0',     desc:'Melhor para: movimento humano realista, multi-shot, cenas de ação, física. Mais rápido e barato entre os top', tip:'Acesse em kling.ai ou klingai.com — tem plano gratuito com marca d\'água' },
+  seedance:   { icon:'🎭', name:'Seedance 2.0',  desc:'Melhor para: direção precisa, consistência de personagem, áudio nativo, lip-sync multilíngue. O mais "cinematográfico"', tip:'Acesse em seedance.ai ou via fal.ai — ideal para anúncios e vídeos musicais' },
+  runway:     { icon:'🛤️', name:'Runway Gen-4',  desc:'Melhor para: pós-produção profissional, fluxo editorial, câmera cinematográfica controlada, efeitos visuais', tip:'Acesse em runwayml.com — from $15/mês, muito usado por profissionais de VFX' },
+  veo:        { icon:'🔵', name:'Veo 3.1 (Google)', desc:'Melhor para: fotorrealismo máximo, áudio sincronizado automático, documentários, diálogos com lip-sync', tip:'Acesse via Google AI Studio, Google One Premium ou VideoFX (beta)' },
+  luma:       { icon:'🌙', name:'Luma Ray2',     desc:'Melhor para: planos de estabelecimento épicos, física natural, cenas com água/fogo/fumaça, 3D fly-through', tip:'Acesse em lumaai.com — plano grátis com 30 gerações por mês' },
+  pika:       { icon:'⚡', name:'Pika 2.0',      desc:'Melhor para: clipes curtos de redes sociais, velocidade (15-30s), animação de fotos, conteúdo diário de volume', tip:'Acesse em pika.art — mais rápido para produção de conteúdo social frequente' },
+};
+
+function setTipo(tipo) {
+  prTipo = tipo;
+  document.getElementById('tipo-img-btn').classList.toggle('active', tipo === 'img');
+  document.getElementById('tipo-vid-btn').classList.toggle('active', tipo === 'vid');
+  document.getElementById('ia-grid-img').style.display = tipo === 'img' ? 'grid' : 'none';
+  document.getElementById('ia-grid-vid').style.display = tipo === 'vid' ? 'grid' : 'none';
+  document.getElementById('video-extras').style.display = tipo === 'vid' ? 'block' : 'none';
+  const defaultIA = tipo === 'img' ? 'midjourney' : 'kling';
+  // deselect all
+  document.querySelectorAll('.ia-card').forEach(c => c.classList.remove('active'));
+  selectIA(defaultIA, tipo);
+}
+
+function selectIA(id, tipo) {
+  prIA = id;
+  document.querySelectorAll(`#ia-grid-${tipo} .ia-card`).forEach(c => c.classList.remove('active'));
+  const card = document.getElementById('ia-' + id);
+  if (card) card.classList.add('active');
+  const info = IA_INFO[id];
+  if (info) {
+    document.getElementById('ia-badge-icon').textContent = info.icon;
+    document.getElementById('ia-badge-name').textContent = info.name;
+    document.getElementById('ia-badge-desc').textContent = info.desc;
+  }
+}
+
+async function runPrompts() {
+  const ideia = document.getElementById('pr-ideia').value.trim();
+  if (!ideia) { alert('Descreva sua ideia acima.'); return; }
+  setBtn('pr-btn', true);
+
+  const estilo = document.getElementById('pr-estilo').value.trim();
+  const ratio = document.getElementById('pr-ratio').value;
+  const dur = prTipo === 'vid' ? document.getElementById('pr-dur').value : '';
+  const cam = prTipo === 'vid' ? document.getElementById('pr-cam').value : '';
+  const info = IA_INFO[prIA];
+
+  const promptRules = {
+    midjourney: `REGRAS DO MIDJOURNEY v7:\n- Escreva em inglês\n- Estrutura: [sujeito principal], [ambiente/cenário], [iluminação], [estilo artístico], [câmera/lente], [mood], [referência de artista se relevante]\n- Use pesos ::2 para elementos mais importantes\n- Inclua: --ar ${ratio.replace(':','+')} (use + ao invés de : no parâmetro) --v 7 --style raw --q 2\n- Para fotorrealismo adicione: --style raw\n- Use palavras poderosas: cinematic, award-winning, masterpiece, ultra-detailed, volumetric lighting\n- Negative prompt no final com --no [elementos indesejados]\n- Escreva APENAS o prompt, sem explicações`,
+
+    flux: `REGRAS DO FLUX 1.1 Pro:\n- Escreva em inglês\n- Seja extremamente descritivo e técnico como um fotógrafo profissional\n- Inclua: tipo de câmera (Canon EOS R5, Sony A7IV etc), lente (35mm f/1.4, 85mm f/1.8), abertura, ISO, velocidade do obturador\n- Descreva luz com precisão: golden hour, softbox, rim lighting, natural diffused etc\n- Inclua textura de pele, materiais, reflexos, profundidade de campo\n- Proporção no final: [aspectRatio: ${ratio}]\n- NÃO use estilos artísticos — FLUX é para fotorrealismo\n- Escreva APENAS o prompt, sem explicações`,
+
+    ideogram: `REGRAS DO IDEOGRAM 2.0:\n- Escreva em inglês\n- SE tiver texto na imagem: especifique EXATAMENTE o texto entre aspas, fonte sugerida, cor e posição\n- Estrutura: [tipo de imagem: thumbnail/poster/logo], [composição visual], [texto principal em aspas], [cores dominantes], [estilo: bold graphic/clean minimal/etc]\n- Para thumbnails: especifique fundo, elemento principal, texto em destaque\n- Seja direto e objetivo — Ideogram prefere instruções claras a prosa poética\n- Adicione: Style: [Realistic/Design/3D Render/Illustration/Auto]\n- Aspect ratio: ${ratio}\n- Escreva APENAS o prompt, sem explicações`,
+
+    firefly: `REGRAS DO ADOBE FIREFLY:\n- Escreva em português OU inglês (aceita os dois)\n- Linguagem natural e descritiva como uma instrução criativa\n- Especifique: tipo de conteúdo, composição, paleta de cores, estilo, humor/atmosfera\n- Para uso comercial: evite mencionar pessoas reais, marcas ou propriedade intelectual\n- Inclua: proporção ${ratio}, estilo de iluminação, intenção de uso (marketing, social media, etc)\n- Adicione "Firefly Style Reference:" se tiver uma referência visual\n- Escreva APENAS o prompt, sem explicações`,
+
+    dalle: `REGRAS DO DALL-E 3 (ChatGPT):\n- Escreva em português OU inglês\n- Seja conversacional e descritivo — DALL-E entende linguagem natural muito bem\n- Especifique claramente: o que é a imagem, como ela se parece, ambiente, estilo, humor\n- Inclua detalhes de composição: ângulo, plano (close-up, wide shot), iluminação\n- Mencione o formato: proporção ${ratio}\n- Funciona bem com: "No estilo de [artista/filme]", "Fotografia de...", "Ilustração de..."\n- Escreva APENAS o prompt, sem explicações`,
+
+    leonardo: `REGRAS DO LEONARDO AI:\n- Escreva em inglês\n- Para modelo FLUX Dev: linguagem técnica fotográfica detalhada\n- Para modelo Phoenix: misture descrição artística com especificações técnicas\n- Inclua: personagem/sujeito com detalhes físicos precisos, cenário, iluminação, mood, estilo\n- Para consistência de personagem: descreva características físicas muito detalhadas\n- Adicione negative prompt: [elementos a evitar]\n- Aspect ratio: ${ratio} | Image Guidance: [0.5-0.8 para mais criatividade]\n- Escreva APENAS o prompt, sem explicações`,
+
+    kling: `REGRAS DO KLING 3.0:\n- Escreva em inglês\n- Estrutura obrigatória: [descrição da cena], [ação/movimento específico], [câmera: ${cam}], [iluminação], [estilo cinemático], [duração: ${dur}]\n- Seja MUITO específico no movimento: "she slowly turns her head to the left", não "she moves"\n- Descreva física: como a roupa se move, como o cabelo reage, expressões faciais\n- Inclua: aspect ratio ${ratio}, motion amount: [low/medium/high]\n- Camera: ${cam} — descreva o movimento da câmera em detalhes\n- Negative prompt: blurry, distorted, artifacts, low quality\n- Escreva APENAS o prompt, sem explicações`,
+
+    seedance: `REGRAS DO SEEDANCE 2.0:\n- Escreva em inglês\n- Você está DIRIGINDO a cena como um diretor de cinema\n- Estrutura: [shot type], [personagem + aparência física detalhada], [ação precisa], [ambiente], [câmera: ${cam}], [som/áudio se relevante], [duração: ${dur}]\n- Para lip-sync: especifique o idioma e o que a pessoa fala\n- Para áudio nativo: descreva sons ambiente, música, efeitos\n- Descreva o arco emocional da cena: começa assim, termina assim\n- Aspect ratio: ${ratio}\n- Escreva APENAS o prompt, sem explicações`,
+
+    runway: `REGRAS DO RUNWAY GEN-4:\n- Escreva em inglês\n- Estilo editorial cinematográfico profissional\n- Estrutura: [tipo de plano cinematográfico], [sujeito/ação], [câmera: ${cam}], [iluminação de filme], [paleta de cor], [duração: ${dur}], [aspect ratio: ${ratio}]\n- Use terminologia de câmera profissional: rack focus, dolly zoom, tracking shot, crane shot\n- Especifique referências de filme ou DOP (diretor de fotografia) se relevante\n- Adicione: Motion Brush areas para controlar quais partes se movem\n- Escreva APENAS o prompt, sem explicações`,
+
+    veo: `REGRAS DO VEO 3.1 (Google):\n- Escreva em inglês\n- Linguagem natural e muito detalhada — Veo entende contexto complexo\n- Estrutura: [abertura da cena], [sujeito principal + descrição], [ação e movimento], [câmera: ${cam}], [ambiente sonoro se quiser áudio], [duração: ${dur}]\n- Para áudio nativo: descreva os sons exatos que devem aparecer: "sounds of city traffic in background, birds chirping"\n- Para diálogo: "character says [frase exata] with natural lip sync"\n- Inclua descrição de cor/grading: "warm golden tones", "desaturated cinematic look"\n- Aspect ratio: ${ratio}\n- Escreva APENAS o prompt, sem explicações`,
+
+    luma: `REGRAS DO LUMA RAY2:\n- Escreva em inglês\n- Especialista em física e elementos naturais — descreva-os com detalhes técnicos\n- Estrutura: [establishing shot OU close], [ambiente físico detalhado], [luz e reflexos], [câmera: ${cam}], [movimento de elementos naturais: água, fogo, fumaça], [duração: ${dur}]\n- Para fly-through ou 3D: descreva o percurso de câmera ponto a ponto\n- Inclua: profundidade, perspectiva, velocidade do movimento\n- Aspect ratio: ${ratio} | Loop: [yes/no]\n- Escreva APENAS o prompt, sem explicações`,
+
+    pika: `REGRAS DO PIKA 2.0:\n- Escreva em inglês — seja direto e conciso (Pika funciona melhor com prompts curtos e objetivos)\n- Estrutura: [sujeito + ação], [ambiente], [estilo visual], [câmera: ${cam}]\n- Para animação de foto: descreva APENAS o movimento desejado: "hair blowing in wind", "eyes blinking slowly"\n- Para efeitos especiais: use os Pikaffects: "explosion", "melt", "inflate", "crush" etc\n- Duração máxima: ${dur} | Aspect ratio: ${ratio}\n- Motion intensity: [1-4] — recomendo 2 para movimentos naturais\n- Negative prompt: blurry, watermark, text\n- Escreva APENAS o prompt, sem explicações`,
+  };
+
+  const rules = promptRules[prIA] || '';
+  const mainPrompt = `Você é especialista em criar prompts profissionais para ferramentas de IA generativa.
+
+Crie um prompt PROFISSIONAL E DETALHADO para ${info.name} baseado nesta ideia:
+
+IDEIA: ${ideia}
+ESTILO/REFERÊNCIA: ${estilo || 'não especificado'}
+PROPORÇÃO: ${ratio}
+${prTipo === 'vid' ? `DURAÇÃO: ${dur}\nMOVIMENTO DE CÂMERA: ${cam}` : ''}
+
+${rules}
+
+Entregue APENAS o prompt final otimizado, pronto para copiar e colar na ferramenta.
+Não inclua explicações, títulos ou comentários — só o prompt.
+Escreva em inglês (exceto DALL-E e Firefly que aceitam português).`;
+
+  const result = await ai(mainPrompt);
+  renderPromptResult('pr-out', info, result);
+  setBtn('pr-btn', false);
+}
+
+function renderPromptResult(elId, info, text) {
+  const el = document.getElementById(elId);
+  const isErr = text.startsWith('⚠');
+  if (isErr) { renderOut(elId, text); return; }
+  el.innerHTML = `
+    <div class="prompt-result">
+      <div class="prompt-result-head">
+        <span class="prompt-result-label">✦ Prompt para ${escHtml(info.name)}</span>
+        <span style="font-size:18px">${info.icon}</span>
+      </div>
+      <div class="prompt-box">${escHtml(text)}</div>
+      <div class="prompt-actions">
+        <button class="btn" style="padding:8px 18px;font-size:12.5px" onclick="copyPrompt(this,${JSON.stringify(text)})">Copiar prompt</button>
+      </div>
+      <div class="prompt-tip">💡 ${escHtml(info.tip)}</div>
+    </div>`;
+}
+
+function copyPrompt(btn, text) {
+  navigator.clipboard?.writeText(text);
+  btn.textContent = '✓ Copiado!';
+  setTimeout(() => btn.textContent = 'Copiar prompt', 2000);
+}
+
+// ── Checklist ────────────────────────────────────────────────────────────────
+const CHK_PHASES = [
+  { name: 'Pré-gravação', items: ['Roteiro revisado e salvo','Bateria do iPhone ≥ 80%','Espaço livre no iPhone ≥ 10 GB','Pasta do projeto criada no PC','Ambiente organizado e iluminado','Microfone testado e funcionando','Take de teste gravado e assistido'] },
+  { name: 'Gravação', items: ['Take principal gravado completo','Takes alternativos gravados','B-roll suficiente capturado','Áudio conferido após 1° take','Gravado em 4K ProRes ou 4K/60fps','Arquivos copiados para pasta RAW'] },
+  { name: 'Edição', items: ['Arquivos renomeados corretamente','Cortes finalizados no CapCut Pro','Áudio limpo, masterizado e nivelado','LUT aplicado e cor finalizada','Efeitos sonoros (SFX) adicionados','Legendas e textos revisados','Export em alta qualidade feito','Arquivo salvo na pasta EXPORT'] },
+  { name: 'Entrega', items: ['Thumbnail criada e salva','Copy do post escrito','Hashtags definidas','Arquivo final na pasta ENTREGA','Link do Google Drive gerado','Backup na nuvem confirmado'] },
+];
+
+let chkState = {};
+let chkTotal = 0;
+
+function buildChecklist() {
+  const body = document.getElementById('chk-body');
+  let idx = 0;
+  chkTotal = CHK_PHASES.reduce((a, p) => a + p.items.length, 0);
+  body.innerHTML = CHK_PHASES.map(phase => `
+    <div style="margin-bottom:22px">
+      <div class="chk-phase-title">${phase.name}</div>
+      ${phase.items.map(item => {
+        const i = idx++;
+        return `<div class="chk-item" id="chki-${i}" onclick="toggleChk(${i})">
+          <div class="chk-box"><span class="chk-check">✓</span></div>
+          <span class="chk-label">${escHtml(item)}</span>
+        </div>`;
+      }).join('')}
+    </div>`).join('');
+  updateChkProgress();
+}
+
+function toggleChk(i) {
+  chkState[i] = !chkState[i];
+  const el = document.getElementById('chki-' + i);
+  el.classList.toggle('checked', !!chkState[i]);
+  updateChkProgress();
+}
+
+function updateChkProgress() {
+  const done = Object.values(chkState).filter(Boolean).length;
+  const pct = Math.round(done / chkTotal * 100);
+  document.getElementById('chk-fill').style.width = pct + '%';
+  document.getElementById('chk-fill').classList.toggle('done', pct === 100);
+  const lbl = document.getElementById('chk-label');
+  lbl.textContent = pct === 100 ? '🎉 Concluído!' : `${done}/${chkTotal} — ${pct}%`;
+  lbl.style.color = pct === 100 ? 'var(--green)' : 'var(--accent)';
+}
+
+function resetChecklist() {
+  chkState = {};
+  document.querySelectorAll('.chk-item').forEach(el => el.classList.remove('checked'));
+  updateChkProgress();
+}
+
+buildChecklist();
+</script>
+</body>
+</html>

@@ -3,159 +3,205 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>VIDEHUB Studio</title>
+<title>Rosu Studio — Hub de Produção</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0c0c10;--surface:#131318;--card:#1a1a22;--card2:#1e1e28;
-  --border:#24242e;--border2:#32323e;
-  --accent:#f59e0b;--acc-bg:rgba(245,158,11,0.09);--acc-br:rgba(245,158,11,0.28);
-  --green:#10b981;--gr-bg:rgba(16,185,129,0.07);--gr-br:rgba(16,185,129,0.22);
-  --blue:#3b82f6;--bl-bg:rgba(59,130,246,0.08);--bl-br:rgba(59,130,246,0.25);
-  --purple:#8b5cf6;--pu-bg:rgba(139,92,246,0.08);--pu-br:rgba(139,92,246,0.25);
-  --red:#ef4444;
-  --text:#e2e2ec;--muted:#5a5a70;--dim:#28282e;
+  --bg:#d4d4d4;--surface:#e0e0e0;--card:#eaeaea;--card2:#f2f2f2;
+  --border:#bdbdbd;--border2:#a0a0a0;
+  --accent:#CC1F1F;--acc-bg:rgba(204,31,31,0.07);--acc-br:rgba(204,31,31,0.35);
+  --green:#0f9e6e;--gr-bg:rgba(15,158,110,0.08);--gr-br:rgba(15,158,110,0.3);
+  --blue:#1d6fb8;--bl-bg:rgba(29,111,184,0.07);--bl-br:rgba(29,111,184,0.28);
+  --purple:#6d3fc0;--pu-bg:rgba(109,63,192,0.07);--pu-br:rgba(109,63,192,0.28);
+  --red:#CC1F1F;
+  --text:#111111;--muted:#7a7a7a;--dim:#cccccc;
 }
-html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
+html,body{height:100%;font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
 /* Layout */
 #shell{display:flex;height:100vh;overflow:hidden}
 /* Sidebar */
-#sidebar{width:212px;min-width:212px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:18px 10px}
-#logo{padding:2px 10px 18px;border-bottom:1px solid var(--border);margin-bottom:14px}
-#logo .title{font-size:15px;font-weight:800;color:var(--accent);letter-spacing:-.03em}
-#logo .sub{font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:.06em;text-transform:uppercase}
-.nav-btn{width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:8px;padding:9px 10px;cursor:pointer;margin-bottom:2px;transition:all .12s;color:var(--text)}
-.nav-btn:hover{background:var(--dim)}
+#sidebar{width:228px;min-width:228px;background:#e8e8e8;border-right:1px solid #c8c8c8;display:flex;flex-direction:column;padding:0}
+/* Logo area */
+#logo{padding:20px 18px 16px;border-bottom:1px solid #c8c8c8;margin-bottom:8px;background:#e8e8e8}
+#logo svg{display:block}
+/* Nav */
+.nav-section{padding:0 8px;flex:1;overflow-y:auto}
+.nav-section::-webkit-scrollbar{width:0}
+/* Accordion groups */
+.acc-group{margin-bottom:6px;border-radius:8px;overflow:hidden;border:1px solid #c8c8c8;background:#e8e8e8}
+.acc-header{width:100%;display:flex;align-items:center;gap:9px;padding:10px 12px;background:#dedede;border:none;cursor:pointer;font-family:inherit;transition:background .12s;border-radius:0}
+.acc-header:hover{background:#d4d4d4}
+.acc-group.open .acc-header{background:#d0d0d0;border-bottom:1px solid #c0c0c0}
+.acc-icon{font-size:14px;flex-shrink:0}
+.acc-title{font-size:12px;font-weight:700;color:#222222;flex:1;text-align:left;letter-spacing:.01em;font-family:inherit}
+.acc-arrow{font-size:11px;color:#888888;transition:transform .2s;flex-shrink:0}
+.acc-group.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{display:none;padding:4px 6px 6px}
+.acc-group.open .acc-body{display:block}
+.nav-label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#aaaaaa;padding:12px 8px 6px;font-family:inherit}
+.nav-btn{width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:6px;padding:8px 10px;cursor:pointer;margin-bottom:1px;transition:all .12s;color:var(--text);display:flex;align-items:center;gap:9px}
+.nav-btn:hover{background:#d8d8d8}
 .nav-btn.active{background:var(--acc-bg);border-color:var(--acc-br)}
-.nav-btn .nb-name{font-size:12.5px;font-weight:600;color:inherit;font-family:inherit}
+.nav-btn .nb-icon{font-size:14px;width:20px;text-align:center;flex-shrink:0}
+.nav-btn .nb-text{flex:1}
+.nav-btn .nb-name{font-size:12px;font-weight:600;color:#555555;font-family:inherit;display:block;transition:color .12s}
 .nav-btn.active .nb-name{color:var(--accent)}
-.nav-btn .nb-sub{font-size:10.5px;color:var(--muted);margin-top:2px;font-family:inherit}
-#sidebar-foot{margin-top:auto;padding:14px 10px 0;border-top:1px solid var(--border);font-size:10px;color:var(--muted);line-height:1.6}
+.nav-btn:hover .nb-name{color:var(--text)}
+.nav-btn .nb-sub{font-size:10px;color:#aaaaaa;margin-top:1px;font-family:inherit;display:block}
+#sidebar-foot{padding:12px 16px 16px;border-top:1px solid #c8c8c8;font-size:10px;color:#aaaaaa;line-height:1.7;letter-spacing:.01em}
+#sidebar-foot span{color:#888888}
 /* Main */
-#main{flex:1;overflow-y:auto;padding:28px 32px}
+#main{flex:1;overflow-y:auto;padding:32px 36px;background:var(--bg)}
+#main::-webkit-scrollbar{width:5px}
+#main::-webkit-scrollbar-thumb{background:#bbbbbb;border-radius:99px}
 .tab-pane{display:none}
 .tab-pane.active{display:block}
-.tab-header{margin-bottom:20px}
-.tab-header h2{font-size:18px;font-weight:700;letter-spacing:-.025em;display:flex;align-items:center;gap:10px}
-.tab-header p{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.65}
-.sep{height:1px;background:var(--border);margin:18px 0}
+.tab-header{margin-bottom:24px}
+.tab-header h2{font-size:20px;font-weight:700;letter-spacing:-.03em;display:flex;align-items:center;gap:10px;color:var(--text)}
+.tab-header p{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.65}
+.sep{height:1px;background:#c8c8c8;margin:20px 0}
 /* Form elements */
-.lbl{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
-.field{margin-bottom:15px}
-input[type=text],input[type=email],select,textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 13px;color:var(--text);font-size:13.5px;outline:none;font-family:inherit;transition:border-color .12s}
-input[type=text]:focus,select:focus,textarea:focus{border-color:var(--border2)}
+.lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#999999;margin-bottom:8px}
+.field{margin-bottom:16px}
+input[type=text],input[type=email],select,textarea{width:100%;background:#f5f5f5;border:1px solid #c8c8c8;border-radius:7px;padding:10px 14px;color:var(--text);font-size:13.5px;outline:none;font-family:inherit;transition:border-color .12s}
+input[type=text]:focus,select:focus,textarea:focus{border-color:#999999}
 textarea{resize:vertical;line-height:1.65}
 select{cursor:pointer}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:15px}
-.btn{background:var(--accent);color:#0a0a0e;border:none;border-radius:8px;padding:10px 24px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:-.01em;transition:opacity .12s}
-.btn:hover{opacity:.88}
-.btn:disabled{background:var(--dim);color:var(--muted);cursor:not-allowed}
-.btn-ghost{background:transparent;border:1px solid var(--border);border-radius:5px;padding:4px 12px;color:var(--muted);font-size:11px;cursor:pointer;font-family:inherit}
-.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:10px 24px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.01em;transition:all .12s}
+.btn:hover{background:#aa1818}
+.btn:disabled{background:#cccccc;color:#999999;cursor:not-allowed}
+.btn-ghost{background:transparent;border:1px solid #c0c0c0;border-radius:5px;padding:4px 12px;color:#888888;font-size:11px;cursor:pointer;font-family:inherit}
+.btn-ghost:hover{border-color:#999999;color:var(--text)}
 /* Result box */
-.result-box{margin-top:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.result-box.err{background:rgba(239,68,68,.05);border-color:rgba(239,68,68,.28)}
-.result-head{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border)}
+.result-box{margin-top:20px;background:#f0f0f0;border:1px solid #cccccc;border-radius:10px;overflow:hidden}
+.result-box.err{background:rgba(204,31,31,.05);border-color:rgba(204,31,31,.3)}
+.result-head{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid #d0d0d0}
 .result-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
 .result-box.err .result-label{color:var(--red)}
 .result-pre{padding:16px 18px;white-space:pre-wrap;color:var(--text);font-size:13.5px;line-height:1.78;font-family:inherit;max-height:460px;overflow-y:auto}
 /* Info/tip boxes */
 .tip{border-radius:8px;padding:10px 14px;font-size:12.5px;line-height:1.6;margin-bottom:12px}
-.tip.blue{background:var(--bl-bg);border:1px solid var(--bl-br);color:#93c5fd}
-.tip.amber{background:var(--acc-bg);border:1px solid var(--acc-br);color:var(--accent)}
-.tip.purple{background:var(--pu-bg);border:1px solid var(--pu-br);color:#c4b5fd}
+.tip.blue{background:rgba(29,111,184,.07);border:1px solid rgba(29,111,184,.25);color:#1d6fb8}
+.tip.amber{background:var(--acc-bg);border:1px solid var(--acc-br);color:#CC1F1F}
+.tip.purple{background:rgba(109,63,192,.07);border:1px solid rgba(109,63,192,.25);color:#6d3fc0}
 /* Drop zone */
-.drop-zone{border:2px dashed var(--border);border-radius:12px;padding:32px 20px;text-align:center;cursor:pointer;background:var(--card);transition:all .2s;margin-bottom:14px}
+.drop-zone{border:1.5px dashed #bbbbbb;border-radius:10px;padding:32px 20px;text-align:center;cursor:pointer;background:#eeeeee;transition:all .2s;margin-bottom:14px}
 .drop-zone:hover,.drop-zone.drag{border-color:var(--accent);background:var(--acc-bg)}
 .drop-zone .dz-icon{font-size:32px;margin-bottom:10px}
-.drop-zone h3{font-size:14px;font-weight:700;margin-bottom:4px;color:var(--text)}
+.drop-zone h3{font-size:14px;font-weight:600;margin-bottom:4px;color:var(--text)}
 .drop-zone p{font-size:12px;color:var(--muted)}
 /* File chip */
 .file-chip{background:var(--acc-bg);border:1px solid var(--acc-br);border-radius:9px;padding:11px 16px;display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.file-chip .fc-name{font-size:13px;font-weight:700;color:var(--accent);flex:1}
+.file-chip .fc-name{font-size:13px;font-weight:600;color:var(--accent);flex:1}
 .file-chip .fc-meta{font-size:11px;color:var(--muted);margin-top:2px}
-/* Audio chips list */
+/* Audio chips */
 .audio-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-.audio-chip{background:var(--pu-bg);border:1px solid var(--pu-br);border-radius:8px;padding:9px 14px;display:flex;align-items:center;gap:10px}
+.audio-chip{background:rgba(109,63,192,.07);border:1px solid rgba(109,63,192,.25);border-radius:8px;padding:9px 14px;display:flex;align-items:center;gap:10px}
 .audio-chip .ac-icon{font-size:18px}
-.audio-chip .ac-name{font-size:13px;font-weight:600;color:#c4b5fd;flex:1}
+.audio-chip .ac-name{font-size:13px;font-weight:600;color:#6d3fc0;flex:1}
 .audio-chip .ac-meta{font-size:11px;color:var(--muted)}
 .audio-chip .ac-rm{background:transparent;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:0 4px}
 .audio-chip .ac-rm:hover{color:var(--red)}
 /* Checklist */
-.chk-phase-title{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
-.chk-item{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:7px;cursor:pointer;margin-bottom:3px;border:1px solid transparent;transition:all .14s}
-.chk-item:hover{background:var(--dim)}
+.chk-phase-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.chk-item{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:6px;cursor:pointer;margin-bottom:2px;border:1px solid transparent;transition:all .14s}
+.chk-item:hover{background:#d8d8d8}
 .chk-item.checked{background:var(--gr-bg);border-color:var(--gr-br)}
-.chk-box{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .14s}
+.chk-box{width:18px;height:18px;border-radius:4px;border:1.5px solid #bbbbbb;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .14s;background:#fff}
 .chk-item.checked .chk-box{background:var(--green);border-color:var(--green)}
-.chk-check{font-size:10px;font-weight:800;color:#0a0a0e;display:none}
+.chk-check{font-size:10px;font-weight:800;color:#fff;display:none}
 .chk-item.checked .chk-check{display:block}
-.chk-label{font-size:13.5px;transition:all .14s}
+.chk-label{font-size:13px;transition:all .14s}
 .chk-item.checked .chk-label{color:var(--muted);text-decoration:line-through}
-.progress-row{display:flex;align-items:center;gap:14px;margin-bottom:22px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px}
-.progress-bar{flex:1;background:var(--dim);border-radius:99px;height:5px;overflow:hidden}
+.progress-row{display:flex;align-items:center;gap:14px;margin-bottom:22px;background:#ebebeb;border:1px solid #cccccc;border-radius:10px;padding:14px 18px}
+.progress-bar{flex:1;background:#d0d0d0;border-radius:99px;height:4px;overflow:hidden}
 .progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .25s}
 .progress-fill.done{background:var(--green)}
 /* Nano Banana tab */
 .nb-setup{background:var(--acc-bg);border:1px solid var(--acc-br);border-radius:10px;padding:16px 18px;margin-bottom:18px}
-.nb-setup h3{font-size:13.5px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.nb-setup h3{font-size:13.5px;font-weight:600;color:var(--accent);margin-bottom:8px}
 .nb-setup p{font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:10px}
 .nb-key-row{display:flex;gap:8px;align-items:center}
-.nb-key-row input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--text);font-size:13px;outline:none;font-family:inherit}
-.nb-key-save{background:var(--accent);color:#0a0a0e;border:none;border-radius:7px;padding:8px 16px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
+.nb-key-row input{flex:1;background:#f5f5f5;border:1px solid #c8c8c8;border-radius:7px;padding:8px 12px;color:var(--text);font-size:13px;outline:none;font-family:inherit}
+.nb-key-save{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit}
 .nb-key-ok{background:var(--gr-bg);border:1px solid var(--gr-br);border-radius:10px;padding:10px 14px;font-size:12.5px;color:var(--green);display:flex;align-items:center;gap:8px;margin-bottom:18px}
-.nb-result-box{margin-top:22px;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.nb-result-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.nb-result-box{margin-top:22px;background:#ebebeb;border:1px solid #cccccc;border-radius:12px;overflow:hidden}
+.nb-result-head{padding:12px 16px;border-bottom:1px solid #d0d0d0;display:flex;align-items:center;justify-content:space-between}
 .nb-result-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
 .nb-img-wrap{padding:16px;text-align:center}
 .nb-img-wrap img{max-width:100%;border-radius:8px;display:block;margin:0 auto}
 .nb-img-actions{display:flex;gap:8px;padding:0 16px 16px;justify-content:center}
 .nb-loading{padding:40px;text-align:center;color:var(--muted);font-size:13px}
 .nb-ratio-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:14px}
-.nb-ratio-btn{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:8px 6px;cursor:pointer;text-align:center;font-size:11.5px;color:var(--muted);font-family:inherit;transition:all .12s}
+.nb-ratio-btn{background:#f0f0f0;border:1px solid #c8c8c8;border-radius:6px;padding:8px 6px;cursor:pointer;text-align:center;font-size:11.5px;color:var(--muted);font-family:inherit;transition:all .12s}
 .nb-ratio-btn.active{background:var(--acc-bg);border-color:var(--acc-br);color:var(--accent);font-weight:700}
 .nb-history{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
-.nb-hist-img{border-radius:8px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:border-color .15s}
+.nb-hist-img{border-radius:8px;overflow:hidden;border:1px solid #cccccc;cursor:pointer;transition:border-color .15s}
 .nb-hist-img:hover{border-color:var(--accent)}
 .nb-hist-img img{width:100%;display:block}
 /* Prompts IA tab */
-.tipo-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 22px;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--muted);font-family:inherit;transition:all .15s}
+.tipo-btn{background:#f0f0f0;border:1px solid #c8c8c8;border-radius:7px;padding:9px 22px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);font-family:inherit;transition:all .15s}
 .tipo-btn.active{background:var(--acc-bg);border-color:var(--acc-br);color:var(--accent)}
 .ia-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.ia-card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:11px 13px;cursor:pointer;transition:all .15s}
-.ia-card:hover{border-color:var(--border2);background:var(--card2)}
+.ia-card{background:#f0f0f0;border:1px solid #c8c8c8;border-radius:8px;padding:11px 13px;cursor:pointer;transition:all .15s}
+.ia-card:hover{border-color:#aaaaaa;background:#e4e4e4}
 .ia-card.active{background:var(--acc-bg);border-color:var(--acc-br)}
-.ia-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;font-family:inherit}
+.ia-name{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:3px;font-family:inherit}
 .ia-card.active .ia-name{color:var(--accent)}
-.ia-tag{font-size:10.5px;color:var(--muted);font-family:inherit}
-.ia-badge-row{display:flex;align-items:flex-start;gap:10px;background:var(--pu-bg);border:1px solid var(--pu-br);border-radius:9px;padding:11px 14px;margin-bottom:14px;margin-top:14px}
+.ia-tag{font-size:10px;color:var(--muted);font-family:inherit}
+.ia-badge-row{display:flex;align-items:flex-start;gap:10px;background:rgba(109,63,192,.07);border:1px solid rgba(109,63,192,.25);border-radius:9px;padding:11px 14px;margin-bottom:14px;margin-top:14px}
 .ia-badge-row span:first-child{font-size:18px;flex-shrink:0;margin-top:1px}
-#ia-badge-name{font-size:13px;font-weight:700;color:#c4b5fd;flex-shrink:0;margin-top:2px}
+#ia-badge-name{font-size:13px;font-weight:700;color:#6d3fc0;flex-shrink:0;margin-top:2px}
 .ia-badge-desc{font-size:11.5px;color:var(--muted);line-height:1.55;font-family:inherit}
-/* Prompt result card */
-.prompt-result{margin-top:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.prompt-result-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+/* Prompt result */
+.prompt-result{margin-top:20px;background:#f0f0f0;border:1px solid #c8c8c8;border-radius:10px;overflow:hidden}
+.prompt-result-head{padding:12px 16px;border-bottom:1px solid #d0d0d0;display:flex;align-items:center;justify-content:space-between}
 .prompt-result-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
-.prompt-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin:14px 16px 6px;font-size:14px;line-height:1.85;color:var(--text);white-space:pre-wrap;font-family:inherit}
+.prompt-box{background:#e8e8e8;border:1px solid #cccccc;border-radius:8px;padding:14px 16px;margin:14px 16px 6px;font-size:14px;line-height:1.85;color:var(--text);white-space:pre-wrap;font-family:inherit}
 .prompt-actions{display:flex;gap:8px;padding:0 16px 14px}
 .prompt-tip{font-size:11.5px;color:var(--muted);padding:0 16px 14px;line-height:1.6}
 /* Roteiro card colapsável */
-.rot-card{margin-top:20px;border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.rot-card-head{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;background:var(--surface);user-select:none;transition:background .12s}
-.rot-card-head:hover{background:var(--card)}
+.rot-card{margin-top:20px;border:1px solid #cccccc;border-radius:10px;overflow:hidden}
+.rot-card-head{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;background:#ebebeb;user-select:none;transition:background .12s}
+.rot-card-head:hover{background:#e2e2e2}
 .rot-card-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
-.rot-card-title{font-size:14px;font-weight:700;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rot-card-title{font-size:14px;font-weight:600;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rot-card-arrow{font-size:11px;color:var(--muted);transition:transform .2s;flex-shrink:0}
 .rot-card-arrow.open{transform:rotate(180deg)}
-.rot-card-body{display:none;padding:18px;border-top:1px solid var(--border);background:var(--surface)}
+.rot-card-body{display:none;padding:18px;border-top:1px solid #d0d0d0;background:#f5f5f5}
 .rot-card-body.open{display:block}
 .rot-card-body pre{white-space:pre-wrap;font-size:14px;line-height:1.9;color:var(--text);font-family:inherit}
 .rot-card-actions{display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px}
+/* Masterização */
+.m-queue-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.m-queue-item{background:#f0f0f0;border:1px solid #cccccc;border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:12px}
+.m-queue-item .mq-name{font-size:13px;font-weight:600;color:#111;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-queue-item .mq-size{font-size:11px;color:#888;flex-shrink:0}
+.m-queue-item .mq-rm{background:none;border:none;color:#aaa;font-size:15px;cursor:pointer;padding:0 2px;flex-shrink:0}
+.m-queue-item .mq-rm:hover{color:#CC1F1F}
+.m-result-item{background:#f5f5f5;border:1px solid #cccccc;border-radius:10px;overflow:hidden;margin-bottom:10px}
+.m-result-head{padding:11px 16px;border-bottom:1px solid #e0e0e0;display:flex;align-items:center;gap:10px}
+.m-result-icon{font-size:16px}
+.m-result-name{font-size:13px;font-weight:600;color:#111;flex:1}
+.m-result-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;letter-spacing:.05em}
+.m-result-badge.done{background:rgba(15,158,110,.1);color:#0f9e6e}
+.m-result-badge.proc{background:rgba(204,31,31,.08);color:#CC1F1F}
+.m-result-badge.err{background:rgba(180,40,40,.1);color:#b42828}
+.m-result-body{padding:12px 16px}
+.m-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.m-stat{background:#ebebeb;border-radius:6px;padding:8px 10px;text-align:center}
+.m-stat-val{font-size:15px;font-weight:700;color:#111}
+.m-stat-label{font-size:10px;color:#888;margin-top:2px;letter-spacing:.04em;text-transform:uppercase}
+.m-dl-btn{background:#CC1F1F;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;width:100%;transition:background .12s}
+.m-dl-btn:hover{background:#aa1818}
+.m-progress-bar{height:3px;background:#ddd;border-radius:99px;margin-bottom:10px;overflow:hidden}
+.m-progress-fill{height:100%;background:#CC1F1F;border-radius:99px;transition:width .3s}
 /* Scrollbar */
-::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+::-webkit-scrollbar-thumb{background:#bbbbbb;border-radius:99px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner{display:inline-block;width:11px;height:11px;border:2px solid var(--accent);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px}
 </style>
@@ -165,53 +211,122 @@ select{cursor:pointer}
 
 <!-- ═══ SIDEBAR ═══ -->
 <aside id="sidebar">
+  <!-- Logo Rosu Studio -->
   <div id="logo">
-    <div class="title">VIDEHUB</div>
-    <div class="sub">Studio de IA · by Claude</div>
+    <svg width="160" height="46" viewBox="0 0 160 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- R -->
+      <text x="0" y="30" font-family="Inter,Arial Black,sans-serif" font-weight="900" font-size="30" fill="#111111" letter-spacing="-0.5">R</text>
+      <!-- Aperture circle replacing O -->
+      <g transform="translate(25, 3)">
+        <circle cx="13" cy="13" r="13" fill="#CC1F1F"/>
+        <!-- 6 aperture blades as white lines from center -->
+        <line x1="13" y1="2"  x2="8"  y2="13" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="22" y1="6"  x2="13" y2="10" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="23" y1="17" x2="15" y2="13" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="13" y1="24" x2="13" y2="13" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="3"  y1="17" x2="11" y2="13" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="4"  y1="6"  x2="11" y2="13" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="13" cy="13" r="4" fill="white" opacity=".18"/>
+      </g>
+      <!-- SU -->
+      <text x="54" y="30" font-family="Inter,Arial Black,sans-serif" font-weight="900" font-size="30" fill="#111111" letter-spacing="-0.5">SU</text>
+      <!-- Studio -->
+      <text x="28" y="44" font-family="Inter,Arial,sans-serif" font-weight="500" font-size="12" fill="#555555" letter-spacing="0.5">Studio</text>
+    </svg>
   </div>
 
-  <button class="nav-btn active" onclick="nav('roteiro',this)">
-    <div class="nb-name">✍️  Roteirista IA</div>
-    <div class="nb-sub">Cria roteiro do zero</div>
-  </button>
-  <button class="nav-btn" onclick="nav('shotlist',this)">
-    <div class="nb-name">🎬  Shot List</div>
-    <div class="nb-sub">Roteiro → lista de cenas</div>
-  </button>
-  <button class="nav-btn" onclick="nav('corte',this)">
-    <div class="nb-name">✂️  Guia de Corte</div>
-    <div class="nb-sub">Envie o vídeo + roteiro</div>
-  </button>
-  <button class="nav-btn" onclick="nav('lut',this)">
-    <div class="nb-name">🎨  LUT & Cor</div>
-    <div class="nb-sub">Grading para CapCut Pro</div>
-  </button>
-  <button class="nav-btn" onclick="nav('sfx',this)">
-    <div class="nb-name">🔊  Efeitos Sonoros</div>
-    <div class="nb-sub">SFX por cena + vídeo</div>
-  </button>
-  <button class="nav-btn" onclick="nav('master',this)">
-    <div class="nb-name">🎚️  Masterização</div>
-    <div class="nb-sub">Áudio profissional</div>
-  </button>
-  <button class="nav-btn" onclick="nav('copy',this)">
-    <div class="nb-name">📱  Copy Social</div>
-    <div class="nb-sub">Título + desc + hashtags</div>
-  </button>
-  <button class="nav-btn" onclick="nav('nanobana',this)">
-    <div class="nb-name">🍌  Nano Banana</div>
-    <div class="nb-sub">Gerar imagem com IA</div>
-  </button>
-  <button class="nav-btn" onclick="nav('prompts',this)">
-    <div class="nb-name">🤖  Prompts para IA</div>
-    <div class="nb-sub">Imagem e vídeo — top IAs</div>
-  </button>
-  <button class="nav-btn" onclick="nav('checklist',this)">
-    <div class="nb-name">✅  Checklist</div>
-    <div class="nb-sub">Entrega sem erros</div>
-  </button>
+  <div class="nav-section">
 
-  <div id="sidebar-foot">Powered by Claude AI<br>Feito para videomakers 🎥</div>
+    <!-- Grupo: Produção -->
+    <div class="acc-group open" id="grp-producao">
+      <button class="acc-header" onclick="toggleGroup('grp-producao')">
+        <span class="acc-icon">🎬</span>
+        <span class="acc-title">Produção</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="acc-body">
+        <button class="nav-btn active" onclick="nav('roteiro',this)">
+          <span class="nb-icon">✍️</span>
+          <span class="nb-text"><span class="nb-name">Roteirista IA</span><span class="nb-sub">Cria roteiro do zero</span></span>
+        </button>
+        <button class="nav-btn" onclick="nav('shotlist',this)">
+          <span class="nb-icon">🎬</span>
+          <span class="nb-text"><span class="nb-name">Shot List</span><span class="nb-sub">Roteiro → lista de cenas</span></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Grupo: Edição -->
+    <div class="acc-group" id="grp-edicao">
+      <button class="acc-header" onclick="toggleGroup('grp-edicao')">
+        <span class="acc-icon">✂️</span>
+        <span class="acc-title">Edição</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="acc-body">
+        <button class="nav-btn" onclick="nav('corte',this)">
+          <span class="nb-icon">✂️</span>
+          <span class="nb-text"><span class="nb-name">Guia de Corte</span><span class="nb-sub">Vídeo + roteiro</span></span>
+        </button>
+        <button class="nav-btn" onclick="nav('lut',this)">
+          <span class="nb-icon">🎨</span>
+          <span class="nb-text"><span class="nb-name">LUT & Cor</span><span class="nb-sub">Grading CapCut Pro</span></span>
+        </button>
+        <button class="nav-btn" onclick="nav('sfx',this)">
+          <span class="nb-icon">🔊</span>
+          <span class="nb-text"><span class="nb-name">Efeitos Sonoros</span><span class="nb-sub">SFX por cena</span></span>
+        </button>
+        <button class="nav-btn" onclick="nav('master',this)">
+          <span class="nb-icon">🎚️</span>
+          <span class="nb-text"><span class="nb-name">Masterização</span><span class="nb-sub">Áudio profissional</span></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Grupo: Entrega -->
+    <div class="acc-group" id="grp-entrega">
+      <button class="acc-header" onclick="toggleGroup('grp-entrega')">
+        <span class="acc-icon">📦</span>
+        <span class="acc-title">Entrega</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="acc-body">
+        <button class="nav-btn" onclick="nav('copy',this)">
+          <span class="nb-icon">📱</span>
+          <span class="nb-text"><span class="nb-name">Copy Social</span><span class="nb-sub">Título + hashtags</span></span>
+        </button>
+        <button class="nav-btn" onclick="nav('checklist',this)">
+          <span class="nb-icon">✅</span>
+          <span class="nb-text"><span class="nb-name">Checklist</span><span class="nb-sub">Entrega sem erros</span></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Grupo: IA -->
+    <div class="acc-group" id="grp-ia">
+      <button class="acc-header" onclick="toggleGroup('grp-ia')">
+        <span class="acc-icon">🤖</span>
+        <span class="acc-title">IA</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="acc-body">
+        <button class="nav-btn" onclick="nav('nanobana',this)">
+          <span class="nb-icon">🍌</span>
+          <span class="nb-text"><span class="nb-name">Nano Banana</span><span class="nb-sub">Gerar imagem</span></span>
+        </button>
+        <button class="nav-btn" onclick="nav('prompts',this)">
+          <span class="nb-icon">🤖</span>
+          <span class="nb-text"><span class="nb-name">Prompts para IA</span><span class="nb-sub">Top IAs de imagem/vídeo</span></span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="sidebar-foot">
+    <span>Rosu Studio Hub</span><br>
+    Powered by Claude AI
+  </div>
 </aside>
 
 <!-- ═══ MAIN ═══ -->
@@ -367,51 +482,54 @@ select{cursor:pointer}
 <div id="tab-master" class="tab-pane">
   <div class="tab-header">
     <h2><span>🎚️</span> Masterização de Som</h2>
-    <p>Envie seus arquivos de áudio e receba configurações profissionais de masterização para vídeos — EQ, compressão, limitador e targets de loudness por plataforma.</p>
+    <p>Envie o áudio, escolha a plataforma e clique em masterizar. O arquivo processado fica pronto para download — sem enviar para nenhum servidor.</p>
   </div>
   <div class="sep"></div>
 
-  <div class="tip purple">🎵 Envie trilha, narração, SFX — qualquer áudio do seu projeto. A IA analisa cada arquivo e entrega um guia profissional de masterização para aplicar no CapCut Pro ou Adobe Audition.</div>
+  <div class="tip blue">🔬 Processamento 100% no seu navegador via Web Audio API — nenhum arquivo sai do seu computador. Aplica: corte de graves, EQ de presença, compressão dinâmica e normalização de loudness por plataforma.</div>
 
-  <!-- Audio drop zone -->
-  <div id="master-dz" class="drop-zone"
+  <!-- Fila de arquivos -->
+  <div id="m-queue-list" class="m-queue-list" style="display:none"></div>
+
+  <!-- Drop zone (múltiplos arquivos) -->
+  <div id="m-dz" class="drop-zone"
     ondragover="event.preventDefault();this.classList.add('drag')"
     ondragleave="this.classList.remove('drag')"
-    ondrop="dropAudio(event)"
-    onclick="document.getElementById('master-fi').click()">
-    <input id="master-fi" type="file" accept="audio/*,video/*" multiple style="display:none" onchange="loadAudios(this.files)"/>
+    ondrop="mDropAudio(event)"
+    onclick="document.getElementById('m-fi').click()">
+    <input id="m-fi" type="file" accept="audio/*,video/mp4,video/quicktime" multiple style="display:none" onchange="mLoadFiles(this.files)"/>
     <div class="dz-icon">🎵</div>
-    <h3>Arraste os arquivos de áudio aqui ou clique</h3>
+    <h3>Arraste os arquivos de áudio aqui</h3>
     <p>MP3, WAV, AAC, M4A — pode enviar vários de uma vez</p>
   </div>
-  <div id="audio-list" class="audio-list"></div>
 
   <div class="grid2">
-    <div class="field" style="margin-bottom:0"><div class="lbl">Tipo de conteúdo</div>
-      <select id="m-tipo">
-        <option>Narração / Voz principal</option>
-        <option>Trilha sonora de fundo</option>
-        <option>Efeito sonoro (SFX)</option>
-        <option>Mix completo do vídeo</option>
-        <option>Intro / Vinheta</option>
-        <option>Podcast / Entrevista</option>
-      </select></div>
-    <div class="field" style="margin-bottom:0"><div class="lbl">Plataforma de destino</div>
+    <div class="field" style="margin-bottom:0">
+      <div class="lbl">Plataforma de destino</div>
       <select id="m-plat">
-        <option>YouTube</option>
-        <option>Instagram Reels</option>
-        <option>TikTok</option>
-        <option>YouTube Shorts</option>
-        <option>Spotify / Podcast</option>
-      </select></div>
+        <option value="-14">YouTube (-14 LUFS)</option>
+        <option value="-14">Spotify (-14 LUFS)</option>
+        <option value="-16">Instagram / TikTok (-16 LUFS)</option>
+        <option value="-16">Podcast (-16 LUFS)</option>
+        <option value="-23">Broadcast TV (-23 LUFS)</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <div class="lbl">Tipo de conteúdo</div>
+      <select id="m-tipo">
+        <option value="voice">Narração / Voz</option>
+        <option value="music">Trilha sonora</option>
+        <option value="mix">Mix completo</option>
+        <option value="sfx">Efeito sonoro</option>
+      </select>
+    </div>
   </div>
-  <div class="field"><div class="lbl">Estilo / referência sonora (opcional)</div>
-    <input type="text" id="m-ref" placeholder="Ex: som limpo como MrBeast, voz aquecida como podcast Joe Rogan, trilha tensa como documentário Netflix..."/></div>
-  <div class="field"><div class="lbl">Problema que você sente no áudio (opcional)</div>
-    <input type="text" id="m-prob" placeholder="Ex: muito baixo, voz abafada, muito agudo, parece gravado em banheiro..."/></div>
-  <div style="height:4px"></div>
-  <button class="btn" id="m-btn" onclick="runMaster()">Masterizar com IA →</button>
-  <div id="m-out"></div>
+
+  <button class="btn" id="m-btn" onclick="runMasterize()" style="width:100%;padding:13px;font-size:14px;margin-top:4px" disabled>
+    🎚️ Masterizar arquivos →
+  </button>
+
+  <div id="m-results" style="margin-top:20px"></div>
 </div>
 
 <!-- ── COPY SOCIAL ── -->
@@ -652,11 +770,19 @@ select{cursor:pointer}
 
 <script>
 // ── Navigation ───────────────────────────────────────────────────────────────
+function toggleGroup(id) {
+  const grp = document.getElementById(id);
+  grp.classList.toggle('open');
+}
+
 function nav(id, btn) {
   document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
   btn.classList.add('active');
+  // open the parent accordion group if closed
+  const grp = btn.closest('.acc-group');
+  if (grp && !grp.classList.contains('open')) grp.classList.add('open');
   document.getElementById('main').scrollTop = 0;
 }
 
@@ -852,19 +978,263 @@ async function runSFX() {
   setBtn('sfx-btn', false);
 }
 
-async function runMaster() {
-  const tipo = document.getElementById('m-tipo').value;
-  const plat = document.getElementById('m-plat').value;
-  const ref = document.getElementById('m-ref').value.trim();
-  const prob = document.getElementById('m-prob').value.trim();
-  const fileList = audioFiles.length
-    ? audioFiles.map(a => `• ${a.name} (${fmtSize(a.size)})`).join('\n')
-    : '(nenhum arquivo enviado — análise geral)';
-  setBtn('m-btn', true);
-  const out = await ai(`Você é engenheiro de áudio profissional especializado em masterização para vídeos digitais.\n\nARQUIVOS DE ÁUDIO PARA MASTERIZAR:\n${fileList}\n\nTipo de conteúdo: ${tipo}\nPlataforma de destino: ${plat}\nReferência sonora: ${ref || 'não informada'}\nProblema percebido: ${prob || 'não informado'}\nSoftware de edição: CapCut Pro Desktop (Windows) e/ou Adobe Audition\n\nEntregue um guia profissional completo de masterização:\n\n🎚 CADEIA DE PROCESSAMENTO — ordem exata dos plugins/processos a aplicar\n\n📊 EQ (EQUALIZAÇÃO)\n— Frequências para cortar (com valores em Hz e dB)\n— Frequências para realçar (com valores em Hz e dB)\n— Tipo de curva recomendada (shelf, bell, high-pass)\n\n🗜 COMPRESSÃO\n— Threshold (dB), Ratio, Attack (ms), Release (ms), Knee\n— Ganho de make-up sugerido\n\n🔊 LOUDNESS & LIMITADOR\n— Target LUFS para ${plat} (valor exato conforme padrão da plataforma)\n— True Peak máximo permitido\n— Configuração do limitador (ceiling)\n\n✨ PROCESSAMENTOS EXTRAS\n— De-noise: quando e como usar\n— Saturação / Exciter: recomendação\n— Stereo imaging: recomendação\n\n⚙️ PASSO A PASSO NO CAPCUT PRO\n— Instruções numeradas para aplicar tudo no CapCut Pro Desktop\n\n🎯 RESULTADO ESPERADO — descreva como o áudio vai soar depois\n\nSeja técnico, específico com valores numéricos e prático. Responda em português brasileiro.`);
-  renderOut('m-out', out);
-  setBtn('m-btn', false);
+// ── Masterização — Web Audio API Engine ──────────────────────────────────────
+const mQueue = []; // {file, name, size}
+
+function mDropAudio(e) {
+  e.preventDefault();
+  document.getElementById('m-dz').classList.remove('drag');
+  mLoadFiles(e.dataTransfer.files);
 }
+
+function mLoadFiles(files) {
+  for (const f of files) mQueue.push({ file: f, name: f.name, size: f.size });
+  mRenderQueue();
+}
+
+function mRemove(i) { mQueue.splice(i,1); mRenderQueue(); }
+
+function mRenderQueue() {
+  const el = document.getElementById('m-queue-list');
+  const btn = document.getElementById('m-btn');
+  if (!mQueue.length) { el.style.display='none'; el.innerHTML=''; btn.disabled=true; return; }
+  el.style.display='flex';
+  el.innerHTML = mQueue.map((item,i) => `
+    <div class="m-queue-item">
+      <span style="font-size:18px">🎵</span>
+      <span class="mq-name">${escHtml(item.name)}</span>
+      <span class="mq-size">${fmtSize(item.size)}</span>
+      <button class="mq-rm" onclick="mRemove(${i})" title="Remover">✕</button>
+    </div>`).join('');
+  btn.disabled = false;
+}
+
+// Loudness estimation (RMS → approximate LUFS)
+function estimateLUFS(buffer) {
+  let sum = 0, count = 0;
+  for (let c = 0; c < buffer.numberOfChannels; c++) {
+    const d = buffer.getChannelData(c);
+    for (let i = 0; i < d.length; i++) { sum += d[i]*d[i]; count++; }
+  }
+  const rms = Math.sqrt(sum / count);
+  return rms > 0 ? 20 * Math.log10(rms) - 0.691 : -70;
+}
+
+// Encode AudioBuffer to WAV Blob
+function encodeWAV(buffer) {
+  const numCh = buffer.numberOfChannels;
+  const sr = buffer.sampleRate;
+  const len = buffer.length;
+  const bitsPerSample = 16;
+  const blockAlign = numCh * (bitsPerSample/8);
+  const byteRate = sr * blockAlign;
+  const dataSize = len * blockAlign;
+  const ab = new ArrayBuffer(44 + dataSize);
+  const view = new DataView(ab);
+  const wr = (o,v,b) => { if(b===4) view.setUint32(o,v,true); else if(b===2) view.setUint16(o,v,true); };
+  const writeStr = (o,s) => { for(let i=0;i<s.length;i++) view.setUint8(o+i,s.charCodeAt(i)); };
+  writeStr(0,'RIFF'); wr(4,36+dataSize,4); writeStr(8,'WAVE');
+  writeStr(12,'fmt '); wr(16,16,4); wr(20,1,2); wr(22,numCh,2);
+  wr(24,sr,4); wr(28,byteRate,4); wr(32,blockAlign,2); wr(34,bitsPerSample,2);
+  writeStr(36,'data'); wr(40,dataSize,4);
+  let off = 44;
+  for (let i = 0; i < len; i++) {
+    for (let c = 0; c < numCh; c++) {
+      const s = Math.max(-1, Math.min(1, buffer.getChannelData(c)[i]));
+      view.setInt16(off, s < 0 ? s*32768 : s*32767, true);
+      off += 2;
+    }
+  }
+  return new Blob([ab], {type:'audio/wav'});
+}
+
+// Main mastering chain via OfflineAudioContext
+async function masterAudioBuffer(inputBuffer, targetLUFS, tipo) {
+  const sr = inputBuffer.sampleRate;
+  const length = inputBuffer.length;
+  const numCh = inputBuffer.numberOfChannels;
+  const ctx = new OfflineAudioContext(numCh, length, sr);
+
+  const src = ctx.createBufferSource();
+  src.buffer = inputBuffer;
+
+  // 1. High-pass filter — remove sub-bass rumble
+  const hp = ctx.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = tipo === 'music' ? 40 : 80;
+  hp.Q.value = 0.7;
+
+  // 2. Low shelf — slight warmth boost
+  const lowShelf = ctx.createBiquadFilter();
+  lowShelf.type = 'lowshelf';
+  lowShelf.frequency.value = 200;
+  lowShelf.gain.value = tipo === 'voice' ? 1.5 : (tipo === 'music' ? 2 : 1);
+
+  // 3. Presence boost (mid-high) — clarity
+  const presence = ctx.createBiquadFilter();
+  presence.type = 'peaking';
+  presence.frequency.value = tipo === 'voice' ? 3000 : 5000;
+  presence.Q.value = 1.0;
+  presence.gain.value = tipo === 'voice' ? 3 : (tipo === 'sfx' ? 4 : 2);
+
+  // 4. High shelf — air
+  const air = ctx.createBiquadFilter();
+  air.type = 'highshelf';
+  air.frequency.value = 10000;
+  air.gain.value = tipo === 'voice' ? 1 : 2;
+
+  // 5. Compressor
+  const comp = ctx.createDynamicsCompressor();
+  if (tipo === 'voice') {
+    comp.threshold.value = -24; comp.ratio.value = 4;
+    comp.attack.value = 0.003; comp.release.value = 0.15; comp.knee.value = 6;
+  } else if (tipo === 'music') {
+    comp.threshold.value = -18; comp.ratio.value = 2.5;
+    comp.attack.value = 0.01; comp.release.value = 0.25; comp.knee.value = 8;
+  } else if (tipo === 'sfx') {
+    comp.threshold.value = -12; comp.ratio.value = 6;
+    comp.attack.value = 0.001; comp.release.value = 0.08; comp.knee.value = 3;
+  } else {
+    comp.threshold.value = -20; comp.ratio.value = 3;
+    comp.attack.value = 0.005; comp.release.value = 0.2; comp.knee.value = 6;
+  }
+
+  // 6. Makeup gain
+  const makeup = ctx.createGain();
+  makeup.gain.value = tipo === 'voice' ? 1.4 : (tipo === 'sfx' ? 1.6 : 1.3);
+
+  // Chain: src → hp → lowShelf → presence → air → comp → makeup → dest
+  src.connect(hp);
+  hp.connect(lowShelf);
+  lowShelf.connect(presence);
+  presence.connect(air);
+  air.connect(comp);
+  comp.connect(makeup);
+  makeup.connect(ctx.destination);
+  src.start(0);
+
+  let rendered = await ctx.startRendering();
+
+  // 7. Loudness normalization — measure RMS, adjust to target LUFS
+  const measuredLUFS = estimateLUFS(rendered);
+  const gainDiff = targetLUFS - measuredLUFS;
+  const gainLinear = Math.pow(10, Math.min(gainDiff, 12) / 20); // cap at +12dB
+
+  // 8. Apply gain + soft limiter in a second offline pass
+  const ctx2 = new OfflineAudioContext(numCh, length, sr);
+  const src2 = ctx2.createBufferSource();
+  src2.buffer = rendered;
+  const gainNode = ctx2.createGain();
+  gainNode.gain.value = gainLinear;
+  const limiter = ctx2.createDynamicsCompressor();
+  limiter.threshold.value = -1.5;
+  limiter.ratio.value = 20;
+  limiter.attack.value = 0.001;
+  limiter.release.value = 0.05;
+  limiter.knee.value = 0;
+  src2.connect(gainNode);
+  gainNode.connect(limiter);
+  limiter.connect(ctx2.destination);
+  src2.start(0);
+  rendered = await ctx2.startRendering();
+
+  const finalLUFS = estimateLUFS(rendered);
+  return { buffer: rendered, inputLUFS: measuredLUFS, outputLUFS: finalLUFS };
+}
+
+async function runMasterize() {
+  if (!mQueue.length) return;
+  const targetLUFS = parseFloat(document.getElementById('m-plat').value);
+  const tipo = document.getElementById('m-tipo').value;
+  const btn = document.getElementById('m-btn');
+  const resultsEl = document.getElementById('m-results');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Masterizando...';
+  resultsEl.innerHTML = '';
+
+  for (let qi = 0; qi < mQueue.length; qi++) {
+    const item = mQueue[qi];
+    const itemId = 'mr-' + qi;
+
+    resultsEl.innerHTML += `
+      <div class="m-result-item" id="${itemId}">
+        <div class="m-result-head">
+          <span class="m-result-icon">🎵</span>
+          <span class="m-result-name">${escHtml(item.name)}</span>
+          <span class="m-result-badge proc" id="${itemId}-badge">Processando...</span>
+        </div>
+        <div class="m-result-body">
+          <div class="m-progress-bar"><div class="m-progress-fill" id="${itemId}-prog" style="width:20%"></div></div>
+          <div id="${itemId}-status" style="font-size:12px;color:#888">Decodificando áudio...</div>
+        </div>
+      </div>`;
+
+    try {
+      const setStatus = (msg, pct) => {
+        const el = document.getElementById(itemId+'-status');
+        const pg = document.getElementById(itemId+'-prog');
+        if (el) el.textContent = msg;
+        if (pg) pg.style.width = pct+'%';
+      };
+
+      // Decode
+      const arrayBuf = await item.file.arrayBuffer();
+      setStatus('Decodificando...', 30);
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const decoded = await audioCtx.decodeAudioData(arrayBuf);
+      await audioCtx.close();
+      setStatus('Aplicando EQ e compressão...', 55);
+      const durationSec = decoded.length / decoded.sampleRate;
+
+      // Master
+      const { buffer, inputLUFS, outputLUFS } = await masterAudioBuffer(decoded, targetLUFS, tipo);
+      setStatus('Codificando WAV...', 85);
+
+      // Encode to WAV
+      const wav = encodeWAV(buffer);
+      setStatus('Pronto!', 100);
+
+      // Build download
+      const url = URL.createObjectURL(wav);
+      const baseName = item.name.replace(/\.[^.]+$/, '');
+      const dlName = baseName + '_masterizado.wav';
+
+      document.getElementById(itemId+'-badge').className = 'm-result-badge done';
+      document.getElementById(itemId+'-badge').textContent = 'Concluído';
+      document.getElementById(itemId+'-status').style.display = 'none';
+      document.getElementById(itemId+'-prog').parentElement.style.display = 'none';
+
+      const body = document.querySelector('#'+itemId+' .m-result-body');
+      body.innerHTML = `
+        <div class="m-stats">
+          <div class="m-stat"><div class="m-stat-val">${inputLUFS.toFixed(1)} LUFS</div><div class="m-stat-label">Original</div></div>
+          <div class="m-stat"><div class="m-stat-val">${outputLUFS.toFixed(1)} LUFS</div><div class="m-stat-label">Masterizado</div></div>
+          <div class="m-stat"><div class="m-stat-val">${Math.round(durationSec)}s</div><div class="m-stat-label">Duração</div></div>
+        </div>
+        <button class="m-dl-btn" onclick="window.open('${url}');document.createElement('a').href='${url}',document.createElement('a').download='${dlName}'">
+          ⬇ Baixar ${escHtml(dlName)}
+        </button>`;
+
+      // Fix download button
+      const dlBtn = body.querySelector('.m-dl-btn');
+      dlBtn.onclick = () => {
+        const a = document.createElement('a');
+        a.href = url; a.download = dlName; a.click();
+      };
+
+    } catch(e) {
+      document.getElementById(itemId+'-badge').className = 'm-result-badge err';
+      document.getElementById(itemId+'-badge').textContent = 'Erro';
+      const body = document.querySelector('#'+itemId+' .m-result-body');
+      body.innerHTML = `<div style="font-size:12.5px;color:#b42828">Erro: ${escHtml(e.message)}. Tente com um arquivo WAV ou MP3.</div>`;
+    }
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '🎚️ Masterizar arquivos →';
+}
+
 
 async function runCopy() {
   const rot = document.getElementById('cp-rot').value.trim();

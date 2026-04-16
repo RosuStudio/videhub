@@ -318,6 +318,10 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
 .key-modal-row input{flex:1;background:var(--dim);border:1px solid var(--border2);border-radius:8px;padding:11px 14px;color:var(--text);font-size:13px;outline:none;font-family:var(--font-mono);letter-spacing:.02em}
 .key-modal-row input:focus{border-color:rgba(204,31,31,0.45);box-shadow:0 0 0 3px rgba(204,31,31,0.07)}
 .key-status-ok{font-size:12px;color:var(--green);font-family:var(--font-mono);padding:8px 12px;background:var(--gr-bg);border:1px solid var(--gr-br);border-radius:7px;margin-bottom:14px;display:none}
+/* ── FILE CHIP ── */
+.file-chip{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border2);border-radius:9px;padding:11px 14px;margin-bottom:14px}
+.fc-name{font-size:13px;font-weight:600;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fc-meta{font-size:11px;color:var(--muted);margin-top:2px;font-family:var(--font-mono)}
 /* LUT modes */
 .lut-mode-btn{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted);font-family:var(--font-body);transition:all .15s}
 .lut-mode-btn:hover{background:var(--card2);color:var(--text2);border-color:var(--border3)}
@@ -351,7 +355,11 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
       <input type="password" id="key-input" placeholder="sk-ant-..." autocomplete="off"/>
       <button class="btn" onclick="saveApiKey()" style="white-space:nowrap;padding:11px 18px">Salvar</button>
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+    <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <button id="ant-test-btn" class="btn-ghost" onclick="testAnthropicKey()" style="font-size:12px">Testar chave</button>
+      <span id="ant-test-status" style="font-size:12px;display:none"></span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
       <span style="font-size:11px;color:var(--muted)">A chave fica salva só no seu navegador (localStorage).</span>
       <button class="btn-ghost" onclick="closeKeyModal()">Fechar</button>
     </div>
@@ -917,6 +925,10 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
       <input type="password" id="nb-apikey" placeholder="Cole sua chave aqui: AIza..."/>
       <button class="nb-key-save" onclick="saveNBKey()">Salvar chave</button>
     </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap">
+      <button id="nb-test-btn" class="btn-ghost" onclick="testGoogleKey()" style="font-size:12px;background:transparent;border-color:var(--acc-br);color:#e06060">Testar chave</button>
+      <span id="nb-test-status" style="font-size:12px;display:none"></span>
+    </div>
   </div>
   <div id="nb-key-ok" class="nb-key-ok" style="display:none">
     <span>✓</span><span>Chave configurada. Pronto para gerar imagens!</span>
@@ -1439,7 +1451,6 @@ async function ai(prompt) {
   const key = localStorage.getItem('anthropic_key') || '';
   if (!key) { showKeySetup(); return '⚠ Configure sua chave Anthropic primeiro (botão ⚙️ no canto inferior direito).'; }
 
-  // Detect if a Google key was accidentally stored as Anthropic key
   if (key.startsWith('AIza')) {
     localStorage.removeItem('anthropic_key');
     showKeySetup();
@@ -1462,9 +1473,52 @@ async function ai(prompt) {
       })
     });
     const d = await r.json();
-    if (d.error) return '⚠ Erro: ' + d.error.message;
-    return d.content?.map(b => b.text || '').join('') || '⚠ Resposta vazia.';
-  } catch(e) { return '⚠ Erro de conexão: ' + e.message; }
+    if (!r.ok || d.error) {
+      const msg = d.error?.message || JSON.stringify(d);
+      return `⚠ Erro Anthropic (HTTP ${r.status}): ${msg}`;
+    }
+    return d.content?.map(b => b.text || '').join('') || '⚠ Resposta vazia da API.';
+  } catch(e) {
+    return `⚠ Erro de conexão: ${e.message}`;
+  }
+}
+
+async function testAnthropicKey() {
+  const btn = document.getElementById('ant-test-btn');
+  const statusEl = document.getElementById('ant-test-status');
+  btn.disabled = true; btn.textContent = 'Testando...';
+  statusEl.style.display = 'block';
+  statusEl.style.color = 'var(--muted)';
+  statusEl.textContent = 'Conectando à API Anthropic...';
+
+  const key = document.getElementById('key-input').value.trim() || localStorage.getItem('anthropic_key') || '';
+  if (!key) { statusEl.textContent = '⚠ Cole a chave antes de testar.'; statusEl.style.color = '#e05555'; btn.disabled = false; btn.textContent = 'Testar chave'; return; }
+
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 10, messages: [{ role: 'user', content: 'Hi' }] })
+    });
+    const d = await r.json();
+    if (!r.ok || d.error) {
+      const msg = d.error?.message || JSON.stringify(d);
+      statusEl.textContent = `⚠ Falhou (HTTP ${r.status}): ${msg}`;
+      statusEl.style.color = '#e05555';
+    } else {
+      statusEl.textContent = '✓ Chave válida! API funcionando corretamente.';
+      statusEl.style.color = 'var(--green)';
+    }
+  } catch(e) {
+    statusEl.textContent = `⚠ Erro de rede: ${e.message}`;
+    statusEl.style.color = '#e05555';
+  }
+  btn.disabled = false; btn.textContent = 'Testar chave';
 }
 
 // ── Shared render ────────────────────────────────────────────────────────────
@@ -1767,7 +1821,7 @@ async function runLutFoto() {
 // ── AI VISION HELPER ─────────────────────────────────────────────────────────
 async function aiVision(base64, prompt) {
   const key = localStorage.getItem('anthropic_key') || '';
-  if (!key) { showKeySetup(); return null; }
+  if (!key) { showKeySetup(); return { error: '⚠ Configure sua chave Anthropic primeiro.' }; }
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -1787,18 +1841,25 @@ async function aiVision(base64, prompt) {
       })
     });
     const d = await r.json();
-    if (d.error) return null;
+    if (!r.ok || d.error) {
+      const msg = d.error?.message || JSON.stringify(d);
+      return { error: `⚠ Erro Anthropic (HTTP ${r.status}): ${msg}` };
+    }
     const text = d.content?.map(b => b.text || '').join('').trim() || '';
     const match = text.match(/\{[\s\S]*\}/);
-    return match ? JSON.parse(match[0]) : null;
-  } catch(e) { return null; }
+    if (!match) return { error: `⚠ Resposta inesperada da API: ${text.slice(0, 200)}` };
+    try { return JSON.parse(match[0]); }
+    catch(e) { return { error: `⚠ JSON inválido retornado: ${match[0].slice(0, 200)}` }; }
+  } catch(e) {
+    return { error: `⚠ Erro de conexão: ${e.message}` };
+  }
 }
 
 // ── LUT GENERATOR ────────────────────────────────────────────────────────────
 function renderLutResult(elId, params, intensity = 1.0) {
   const el = document.getElementById(elId);
-  if (!params) {
-    el.innerHTML = `<div class="tip amber">⚠ Não foi possível analisar a imagem. Verifique sua chave de API e tente novamente.</div>`;
+  if (!params || params.error) {
+    el.innerHTML = `<div class="tip amber">${params?.error || '⚠ Não foi possível analisar a imagem. Verifique sua chave de API e tente novamente.'}</div>`;
     return;
   }
 
@@ -2220,9 +2281,22 @@ function setNBRatio(r, btn) {
   btn.classList.add('active');
 }
 
+// Modelos do Gemini para geração de imagem — tentados em ordem
+const NB_MODELS = [
+  'gemini-2.0-flash-preview-image-generation',
+  'gemini-2.0-flash-exp-image-generation',
+  'gemini-2.0-flash',
+];
+
 async function runNanoBanana() {
   const key = localStorage.getItem('nb_apikey') || localStorage.getItem('google_api_key');
-  if (!key) { showKeySetup(); return; }
+  if (!key) {
+    // Mostrar o setup do Google, não o modal da Anthropic
+    document.getElementById('nb-setup-box').style.display = 'block';
+    document.getElementById('nb-key-ok').style.display = 'none';
+    document.getElementById('nb-setup-box').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
   const prompt = document.getElementById('nb-prompt').value.trim();
   if (!prompt) { alert('Digite o prompt da imagem.'); return; }
   const style = document.getElementById('nb-style').value.trim();
@@ -2235,50 +2309,88 @@ async function runNanoBanana() {
   const out = document.getElementById('nb-out');
   out.innerHTML = `<div class="nb-result-box"><div class="nb-loading"><span class="spinner"></span>Processando imagem — pode levar 10–20 segundos...</div></div>`;
 
-  try {
-    const body = {
-      contents: [{ parts: [{ text: fullPrompt }] }],
-      generationConfig: {
-        responseModalities: ['TEXT', 'IMAGE'],
+  let imgB64 = null, caption = '', lastError = '';
+
+  for (const model of NB_MODELS) {
+    try {
+      const body = {
+        contents: [{ parts: [{ text: fullPrompt }] }],
+        generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+      };
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+      );
+      const data = await res.json();
+
+      if (data.error) {
+        const code = data.error.status || '';
+        lastError = `[${model}] ${data.error.message}`;
+        // NOT_FOUND = modelo não existe, tenta o próximo
+        if (code === 'NOT_FOUND' || res.status === 404) continue;
+        // Outros erros (auth, quota, etc.) — para imediatamente
+        break;
       }
-    };
 
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${key}`,
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
-    );
-    const data = await res.json();
-
-    if (data.error) {
-      const msg = data.error.message || JSON.stringify(data.error);
-      out.innerHTML = renderNBError(msg);
-      btn.disabled = false; btn.innerHTML = '🍌  Gerar imagem com Nano Banana →';
-      return;
+      const parts = data?.candidates?.[0]?.content?.parts || [];
+      for (const part of parts) {
+        if (part.inlineData?.data) imgB64 = part.inlineData.data;
+        if (part.text) caption = part.text;
+      }
+      if (imgB64) { lastError = ''; break; }
+      lastError = `[${model}] Resposta sem imagem.`;
+    } catch(e) {
+      lastError = `Erro de conexão: ${e.message}`;
+      break;
     }
+  }
 
-    let imgB64 = null, caption = '';
-    const parts = data?.candidates?.[0]?.content?.parts || [];
-    for (const part of parts) {
-      if (part.inlineData?.data) imgB64 = part.inlineData.data;
-      if (part.text) caption = part.text;
-    }
-
-    if (!imgB64) {
-      out.innerHTML = renderNBError('Nenhuma imagem retornada. Verifique se a chave tem acesso ao modelo de imagens (requer faturamento ativo no Google Cloud).');
-      btn.disabled = false; btn.innerHTML = '🍌  Gerar imagem com Nano Banana →';
-      return;
-    }
-
+  if (!imgB64) {
+    out.innerHTML = renderNBError(lastError || 'Nenhuma imagem retornada. Verifique se a chave tem faturamento ativo no Google Cloud.');
+  } else {
     const dataUrl = `data:image/png;base64,${imgB64}`;
     nbSession.unshift({ dataUrl, prompt: fullPrompt });
     renderNBResult(out, dataUrl, caption, fullPrompt);
     renderNBHistory();
-
-  } catch (e) {
-    out.innerHTML = renderNBError('Erro de conexão: ' + e.message);
   }
+
   btn.disabled = false;
   btn.innerHTML = '🍌  Gerar imagem com Nano Banana →';
+}
+
+async function testGoogleKey() {
+  const btn = document.getElementById('nb-test-btn');
+  const statusEl = document.getElementById('nb-test-status');
+  btn.disabled = true; btn.textContent = 'Testando...';
+  statusEl.style.display = 'block';
+  statusEl.style.color = 'var(--muted)';
+  statusEl.textContent = 'Conectando à API Google...';
+
+  const key = document.getElementById('nb-apikey').value.trim() || localStorage.getItem('nb_apikey') || '';
+  if (!key) { statusEl.textContent = '⚠ Cole a chave antes de testar.'; statusEl.style.color = '#e05555'; btn.disabled = false; btn.textContent = 'Testar chave'; return; }
+
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models?key=${key}`,
+      { method: 'GET' }
+    );
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      const msg = data.error?.message || JSON.stringify(data);
+      statusEl.textContent = `⚠ Falhou (HTTP ${res.status}): ${msg}`;
+      statusEl.style.color = '#e05555';
+    } else {
+      // Verifica se algum modelo de imagem está disponível
+      const models = (data.models || []).map(m => m.name);
+      const imgModel = models.find(m => m.includes('image-generation') || m.includes('flash'));
+      statusEl.textContent = `✓ Chave válida! ${imgModel ? 'Modelo de imagem encontrado: ' + imgModel.split('/').pop() : 'API Google conectada.'}`;
+      statusEl.style.color = 'var(--green)';
+    }
+  } catch(e) {
+    statusEl.textContent = `⚠ Erro de rede: ${e.message}`;
+    statusEl.style.color = '#e05555';
+  }
+  btn.disabled = false; btn.textContent = 'Testar chave';
 }
 
 function renderNBResult(el, dataUrl, caption, prompt) {
@@ -2847,7 +2959,8 @@ function closeKeyModal() {
 
 function saveApiKey() {
   const key = document.getElementById('key-input').value.trim();
-  if (!key || !key.startsWith('sk-')) { alert('Cole uma chave Anthropic válida (começa com sk-ant-).'); return; }
+  if (!key) { alert('Cole a chave antes de salvar.'); return; }
+  if (!key.startsWith('sk-')) { alert('Chave inválida. A chave Anthropic começa com "sk-ant-api03-...". Copie diretamente do console.anthropic.com → API Keys.'); return; }
   localStorage.setItem('anthropic_key', key);
   document.getElementById('key-status-ok').style.display = 'block';
   document.getElementById('api-cfg-btn').classList.add('key-ok');

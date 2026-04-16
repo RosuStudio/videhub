@@ -1555,6 +1555,29 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
 
   <!-- Resultado -->
   <div id="sd-out" style="margin-top:24px"></div>
+
+  <div class="sep" style="margin-top:32px"></div>
+
+  <!-- Upload de vídeo gerado no Higgsfield -->
+  <div style="margin-top:4px">
+    <div class="lbl" style="margin-bottom:6px">📤 Ou suba um vídeo gerado no Higgsfield</div>
+    <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px;line-height:1.65">
+      Gere no <strong>higgsfield.ai</strong> → baixe o vídeo → arraste aqui para visualizar, renomear e baixar de dentro do hub.
+    </p>
+
+    <div id="sd-upload-dz" class="drop-zone"
+      ondragover="event.preventDefault();this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')"
+      ondrop="sdUploadDrop(event)"
+      onclick="document.getElementById('sd-upload-input').click()">
+      <div class="dz-icon">🎬</div>
+      <div class="dz-text">Arraste o vídeo do Higgsfield aqui ou clique para escolher</div>
+      <div class="dz-sub">MP4, MOV, WEBM</div>
+      <input type="file" id="sd-upload-input" accept="video/*" style="display:none" onchange="sdUploadFile(this.files[0])">
+    </div>
+
+    <div id="sd-upload-list" style="display:flex;flex-direction:column;gap:12px;margin-top:4px"></div>
+  </div>
 </div>
 
 </main>
@@ -3803,6 +3826,57 @@ async function runSeedance() {
 function sdDownload(url) {
   const a = document.createElement('a');
   a.href = url; a.download = `seedance_${Date.now()}.mp4`; a.target = '_blank'; a.click();
+}
+
+// ── Upload Higgsfield ─────────────────────────────────────────────────────────
+const sdUploads = [];
+
+function sdUploadDrop(e) {
+  e.preventDefault();
+  document.getElementById('sd-upload-dz').classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('video/')) sdUploadFile(f);
+}
+
+function sdUploadFile(file) {
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  const id = 'sdv_' + Date.now();
+  sdUploads.unshift({ id, name: file.name, size: file.size, url });
+  renderSdUploads();
+  document.getElementById('sd-upload-input').value = '';
+}
+
+function renderSdUploads() {
+  const list = document.getElementById('sd-upload-list');
+  if (!sdUploads.length) { list.innerHTML = ''; return; }
+  list.innerHTML = sdUploads.map(v => `
+    <div class="sd-result">
+      <div class="sd-result-head">
+        <span class="sd-result-label">🎬 ${escHtml(v.name)}</span>
+        <span class="sd-meta">${formatBytes(v.size)}</span>
+      </div>
+      <div class="sd-video-wrap">
+        <video controls style="max-height:320px">
+          <source src="${v.url}" type="video/mp4"/>
+        </video>
+      </div>
+      <div class="sd-video-actions">
+        <button class="btn" style="padding:9px 20px;font-size:13px" onclick="sdDlLocal('${v.url}','${escHtml(v.name)}')">⬇ Baixar</button>
+        <button class="btn-ghost" onclick="sdRemoveUpload('${v.id}')">🗑 Remover</button>
+      </div>
+    </div>`).join('');
+}
+
+function sdDlLocal(url, name) {
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.click();
+}
+
+function sdRemoveUpload(id) {
+  const idx = sdUploads.findIndex(v => v.id === id);
+  if (idx >= 0) { URL.revokeObjectURL(sdUploads[idx].url); sdUploads.splice(idx, 1); }
+  renderSdUploads();
 }
 
 // Init Seedance quando a aba abrir

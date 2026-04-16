@@ -318,6 +318,21 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
 .key-modal-row input{flex:1;background:var(--dim);border:1px solid var(--border2);border-radius:8px;padding:11px 14px;color:var(--text);font-size:13px;outline:none;font-family:var(--font-mono);letter-spacing:.02em}
 .key-modal-row input:focus{border-color:rgba(204,31,31,0.45);box-shadow:0 0 0 3px rgba(204,31,31,0.07)}
 .key-status-ok{font-size:12px;color:var(--green);font-family:var(--font-mono);padding:8px 12px;background:var(--gr-bg);border:1px solid var(--gr-br);border-radius:7px;margin-bottom:14px;display:none}
+/* ── SEEDANCE ── */
+.sd-mode-btn{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);font-family:var(--font-body);transition:all .15s}
+.sd-mode-btn:hover{background:var(--card2);color:var(--text2);border-color:var(--border3)}
+.sd-mode-btn.active{background:var(--acc-bg);border-color:var(--acc-br);color:#e06060}
+.sd-result{margin-top:22px;background:var(--card);border:1px solid var(--border2);border-radius:12px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,0.04)}
+.sd-result-head{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sd-result-label{font-size:9.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-family:var(--font-mono)}
+.sd-video-wrap{padding:16px;text-align:center}
+.sd-video-wrap video{max-width:100%;border-radius:8px;display:block;margin:0 auto;box-shadow:0 4px 24px rgba(0,0,0,0.5)}
+.sd-video-actions{display:flex;gap:8px;padding:0 16px 16px;justify-content:center;flex-wrap:wrap}
+.sd-progress{padding:30px 20px;text-align:center}
+.sd-progress-bar{background:var(--dim);border-radius:99px;height:3px;overflow:hidden;margin:14px 0 8px;border:1px solid var(--border)}
+.sd-progress-fill{height:100%;background:var(--accent);border-radius:99px;box-shadow:0 0 8px rgba(204,31,31,0.5);animation:sdPulse 1.5s ease-in-out infinite}
+@keyframes sdPulse{0%,100%{width:15%}50%{width:85%}}
+.sd-meta{font-size:11px;color:var(--muted);font-family:var(--font-mono)}
 /* ── FILE CHIP ── */
 .file-chip{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border2);border-radius:9px;padding:11px 14px;margin-bottom:14px}
 .fc-name{font-size:13px;font-weight:600;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -473,6 +488,10 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
         <button class="nav-btn" onclick="nav('prompts',this)">
           <span class="nb-icon">🤖</span>
           <span class="nb-text"><span class="nb-name">Prompts para IA</span><span class="nb-sub">Top IAs de imagem/vídeo</span></span>
+        </button>
+        <button class="nav-btn" onclick="nav('seedance',this)">
+          <span class="nb-icon">🎬</span>
+          <span class="nb-text"><span class="nb-name">Seedance 2.0</span><span class="nb-sub">Vídeo IA — ByteDance</span></span>
         </button>
       </div>
     </div>
@@ -1422,6 +1441,120 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,<svg xmlns='http:
     <div style="font-size:36px;margin-bottom:10px">📂</div>
     <div style="font-size:14px">Pasta vazia</div>
   </div>
+</div>
+
+<!-- ── SEEDANCE 2.0 ── -->
+<div id="tab-seedance" class="tab-pane">
+  <div class="tab-header">
+    <h2><span>🎬</span> Seedance 2.0</h2>
+    <p>Gere vídeos cinematográficos com áudio nativo via ByteDance Seedance 2.0 — texto, imagem ou referências como entrada.</p>
+  </div>
+  <div class="sep"></div>
+
+  <!-- API Key Setup -->
+  <div id="sd-setup-box" class="nb-setup" style="display:none">
+    <h3>⚙️ Configuração — chave do AI/ML API</h3>
+    <p>Acesse <strong>aimlapi.com</strong> → Dashboard → API Keys → Create Key.<br>
+    Custo: ~$0.13–$0.30 por segundo de vídeo gerado. Cada geração leva 2–3 minutos.</p>
+    <div class="nb-key-row">
+      <input type="password" id="sd-apikey" placeholder="Cole sua chave aqui..."/>
+      <button class="nb-key-save" onclick="sdSaveKey()">Salvar chave</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap">
+      <button class="btn-ghost" onclick="sdTestKey()" style="font-size:12px;border-color:var(--acc-br);color:#e06060">Testar chave</button>
+      <span id="sd-test-status" style="font-size:12px;display:none"></span>
+    </div>
+  </div>
+  <div id="sd-key-ok" class="nb-key-ok" style="display:none">
+    <span>✓</span><span>Chave configurada. Pronto para gerar vídeos!</span>
+    <button class="btn-ghost" style="margin-left:auto" onclick="sdChangeKey()">Trocar chave</button>
+  </div>
+
+  <!-- Modo -->
+  <div class="lbl" style="margin-bottom:10px">Modo de geração</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">
+    <button class="sd-mode-btn active" id="sd-mode-t2v" onclick="sdSetMode('t2v',this)">✍️ Texto → Vídeo</button>
+    <button class="sd-mode-btn" id="sd-mode-i2v" onclick="sdSetMode('i2v',this)">🖼️ Imagem → Vídeo</button>
+  </div>
+
+  <!-- Prompt -->
+  <div class="field">
+    <div class="lbl">Prompt do vídeo</div>
+    <div class="tip blue" style="margin-bottom:8px">💡 Use a aba <strong>Prompts para IA</strong> → Vídeo para gerar um prompt otimizado.</div>
+    <textarea id="sd-prompt" rows="5" placeholder="Descreva o vídeo que você quer gerar em detalhes. Inclua: sujeito, ação, ambiente, câmera, iluminação, estilo.&#10;&#10;Ex: Uma videomaker jovem filmando uma rua movimentada de São Paulo ao entardecer, câmera na mão subindo devagar, luz dourada, estilo cinematográfico, 4K..."></textarea>
+  </div>
+
+  <!-- Imagem de entrada (modo i2v) -->
+  <div id="sd-img-section" style="display:none;margin-bottom:18px">
+    <div class="lbl" style="margin-bottom:10px">Imagem de entrada (primeiro frame)</div>
+    <div id="sd-img-dz" class="drop-zone"
+      ondragover="event.preventDefault();this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')"
+      ondrop="sdImgDrop(event)"
+      onclick="document.getElementById('sd-img-input').click()">
+      <div class="dz-icon">🖼️</div>
+      <div class="dz-text">Arraste a imagem aqui ou clique para escolher</div>
+      <div class="dz-sub">JPG, PNG, WEBP — será o primeiro frame do vídeo</div>
+      <input type="file" id="sd-img-input" accept="image/*" style="display:none" onchange="sdImgSelect(this.files[0])">
+    </div>
+    <div id="sd-img-preview" style="display:none;margin-top:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="lbl" style="margin:0">Imagem selecionada</div>
+        <button class="btn-ghost" onclick="sdImgRemove()" style="font-size:12px">✕ Remover</button>
+      </div>
+      <img id="sd-img-thumb" style="max-width:100%;max-height:180px;border-radius:8px;border:1px solid var(--border2)"/>
+    </div>
+  </div>
+
+  <!-- Parâmetros -->
+  <div class="grid2">
+    <div class="field" style="margin-bottom:0">
+      <div class="lbl">Duração</div>
+      <select id="sd-duration">
+        <option value="5">5 segundos</option>
+        <option value="8" selected>8 segundos</option>
+        <option value="10">10 segundos</option>
+        <option value="15">15 segundos</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <div class="lbl">Proporção</div>
+      <select id="sd-ratio">
+        <option value="16:9" selected>16:9 — YouTube / Horizontal</option>
+        <option value="9:16">9:16 — Reels / Vertical</option>
+        <option value="1:1">1:1 — Quadrado</option>
+        <option value="4:3">4:3 — Clássico</option>
+        <option value="21:9">21:9 — Cinemascope</option>
+      </select>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:14px">
+    <div class="field" style="margin-bottom:0">
+      <div class="lbl">Resolução</div>
+      <select id="sd-resolution">
+        <option value="720p" selected>720p (recomendado)</option>
+        <option value="480p">480p (mais rápido)</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <div class="lbl">Áudio nativo</div>
+      <select id="sd-audio">
+        <option value="true" selected>Sim — gerar áudio automático</option>
+        <option value="false">Não — só vídeo</option>
+      </select>
+    </div>
+  </div>
+
+  <div style="height:20px"></div>
+  <button class="btn" id="sd-btn" onclick="runSeedance()" style="width:100%;padding:14px;font-size:14px">
+    🎬 Gerar vídeo com Seedance 2.0 →
+  </button>
+  <div style="font-size:11.5px;color:var(--muted);margin-top:8px;text-align:center">
+    A geração leva 2–3 minutos. Não feche a aba enquanto processa.
+  </div>
+
+  <!-- Resultado -->
+  <div id="sd-out" style="margin-top:24px"></div>
 </div>
 
 </main>
@@ -3445,6 +3578,235 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 buildChecklist();
+
+// ── SEEDANCE 2.0 ─────────────────────────────────────────────────────────────
+const SD_BASE = 'https://api.aimlapi.com/v2';
+let sdMode = 't2v';
+let sdImgBase64 = null;
+let sdImgUrl = null;
+
+function sdInitUI() {
+  const key = localStorage.getItem('sd_apikey');
+  if (key) {
+    document.getElementById('sd-setup-box').style.display = 'none';
+    document.getElementById('sd-key-ok').style.display = 'flex';
+  } else {
+    document.getElementById('sd-setup-box').style.display = 'block';
+    document.getElementById('sd-key-ok').style.display = 'none';
+  }
+}
+
+function sdSaveKey() {
+  const k = document.getElementById('sd-apikey').value.trim();
+  if (!k) { alert('Cole a chave antes de salvar.'); return; }
+  localStorage.setItem('sd_apikey', k);
+  document.getElementById('sd-setup-box').style.display = 'none';
+  document.getElementById('sd-key-ok').style.display = 'flex';
+}
+
+function sdChangeKey() {
+  localStorage.removeItem('sd_apikey');
+  document.getElementById('sd-apikey').value = '';
+  document.getElementById('sd-key-ok').style.display = 'none';
+  document.getElementById('sd-setup-box').style.display = 'block';
+}
+
+async function sdTestKey() {
+  const btn = document.querySelector('#sd-setup-box .btn-ghost');
+  const statusEl = document.getElementById('sd-test-status');
+  btn.disabled = true; btn.textContent = 'Testando...';
+  statusEl.style.display = 'block';
+  statusEl.style.color = 'var(--muted)';
+  statusEl.textContent = 'Conectando ao AI/ML API...';
+  const key = document.getElementById('sd-apikey').value.trim() || localStorage.getItem('sd_apikey') || '';
+  if (!key) { statusEl.textContent = '⚠ Cole a chave antes de testar.'; statusEl.style.color = '#e05555'; btn.disabled = false; btn.textContent = 'Testar chave'; return; }
+  try {
+    const r = await fetch(`${SD_BASE}/video/generations?generation_id=test`, {
+      headers: { 'Authorization': `Bearer ${key}` }
+    });
+    // 404 = endpoint ok mas ID não existe = chave válida
+    // 401 = chave inválida
+    if (r.status === 401) {
+      statusEl.textContent = '⚠ Chave inválida (401). Verifique no aimlapi.com.';
+      statusEl.style.color = '#e05555';
+    } else {
+      statusEl.textContent = '✓ Chave válida! API conectada.';
+      statusEl.style.color = 'var(--green)';
+    }
+  } catch(e) {
+    statusEl.textContent = `⚠ Erro de rede: ${e.message}`;
+    statusEl.style.color = '#e05555';
+  }
+  btn.disabled = false; btn.textContent = 'Testar chave';
+}
+
+function sdSetMode(mode, btn) {
+  sdMode = mode;
+  document.querySelectorAll('.sd-mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sd-img-section').style.display = mode === 'i2v' ? 'block' : 'none';
+}
+
+function sdImgDrop(e) {
+  e.preventDefault();
+  document.getElementById('sd-img-dz').classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) sdImgSelect(f);
+}
+
+function sdImgSelect(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    sdImgBase64 = ev.target.result;
+    document.getElementById('sd-img-thumb').src = sdImgBase64;
+    document.getElementById('sd-img-preview').style.display = 'block';
+    document.getElementById('sd-img-dz').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function sdImgRemove() {
+  sdImgBase64 = null; sdImgUrl = null;
+  document.getElementById('sd-img-preview').style.display = 'none';
+  document.getElementById('sd-img-dz').style.display = 'block';
+  document.getElementById('sd-img-input').value = '';
+}
+
+async function sdUploadImg(base64DataUrl) {
+  // Converte base64 para blob e faz upload para um hosting temporário via AI/ML API
+  // Fallback: usa a URL data: diretamente no campo image_url
+  // O aimlapi aceita URLs públicas — para base64, usamos um truque: não enviamos, avisa o usuário
+  return null; // handled inline
+}
+
+async function runSeedance() {
+  const key = localStorage.getItem('sd_apikey');
+  if (!key) {
+    document.getElementById('sd-setup-box').style.display = 'block';
+    document.getElementById('sd-setup-box').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  const prompt = document.getElementById('sd-prompt').value.trim();
+  if (!prompt) { alert('Digite o prompt do vídeo.'); return; }
+  if (sdMode === 'i2v' && !sdImgBase64) { alert('Selecione uma imagem de entrada no modo Imagem → Vídeo.'); return; }
+
+  const btn = document.getElementById('sd-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Enviando para Seedance 2.0...';
+
+  const out = document.getElementById('sd-out');
+  out.innerHTML = `
+    <div class="sd-result">
+      <div class="sd-result-head"><span class="sd-result-label">🎬 Seedance 2.0 — Gerando vídeo</span></div>
+      <div class="sd-progress">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:4px">Processando — isso leva 2 a 3 minutos...</div>
+        <div class="sd-progress-bar"><div class="sd-progress-fill"></div></div>
+        <div id="sd-status-msg" class="sd-meta">Enviando requisição...</div>
+      </div>
+    </div>`;
+
+  const setStatus = (msg) => {
+    const el = document.getElementById('sd-status-msg');
+    if (el) el.textContent = msg;
+  };
+
+  try {
+    const body = {
+      model: 'bytedance/seedance-2-0',
+      prompt,
+      resolution: document.getElementById('sd-resolution').value,
+      duration: parseInt(document.getElementById('sd-duration').value),
+      aspect_ratio: document.getElementById('sd-ratio').value,
+      generate_audio: document.getElementById('sd-audio').value === 'true'
+    };
+
+    if (sdMode === 'i2v' && sdImgBase64) {
+      // Tenta enviar como URL data: (alguns providers aceitam)
+      body.image_url = sdImgBase64;
+    }
+
+    const r = await fetch(`${SD_BASE}/video/generations`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${key}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await r.json();
+    if (!r.ok || data.error) {
+      const msg = data.error?.message || JSON.stringify(data);
+      out.innerHTML = `<div class="result-box err"><div class="result-head"><span class="result-label">⚠ Erro</span></div><pre class="result-pre">HTTP ${r.status}: ${escHtml(msg)}</pre></div>`;
+      btn.disabled = false; btn.innerHTML = '🎬 Gerar vídeo com Seedance 2.0 →';
+      return;
+    }
+
+    const genId = data.id;
+    setStatus(`ID: ${genId} — aguardando fila...`);
+    btn.innerHTML = '<span class="spinner"></span>Aguardando geração...';
+
+    // Polling a cada 15 segundos
+    let attempts = 0;
+    while (attempts < 24) { // max 6 minutos
+      await new Promise(res => setTimeout(res, 15000));
+      attempts++;
+      setStatus(`Verificando status... (tentativa ${attempts}/24)`);
+
+      const poll = await fetch(`${SD_BASE}/video/generations?generation_id=${genId}`, {
+        headers: { 'Authorization': `Bearer ${key}` }
+      });
+      const pd = await poll.json();
+
+      if (pd.status === 'completed' && pd.video?.url) {
+        const videoUrl = pd.video.url;
+        const cost = pd.meta?.usage?.usd_spent ? `$${pd.meta.usage.usd_spent.toFixed(3)}` : '—';
+        const dur = document.getElementById('sd-duration').value;
+        out.innerHTML = `
+          <div class="sd-result">
+            <div class="sd-result-head">
+              <span class="sd-result-label">✦ Vídeo gerado — Seedance 2.0</span>
+              <span class="sd-meta">Custo: ${cost} · ${dur}s · ${document.getElementById('sd-ratio').value}</span>
+            </div>
+            <div class="sd-video-wrap">
+              <video controls autoplay loop>
+                <source src="${escHtml(videoUrl)}" type="video/mp4"/>
+              </video>
+            </div>
+            <div class="sd-video-actions">
+              <button class="btn" style="padding:9px 20px;font-size:13px" onclick="sdDownload('${escHtml(videoUrl)}')">⬇ Baixar vídeo</button>
+              <button class="btn-ghost" onclick="document.getElementById('sd-prompt').value=${JSON.stringify(prompt)};document.getElementById('sd-out').innerHTML=''">↺ Usar prompt de novo</button>
+            </div>
+          </div>`;
+        break;
+      } else if (pd.status === 'error') {
+        const msg = pd.error?.message || 'Erro desconhecido na geração.';
+        out.innerHTML = `<div class="result-box err"><div class="result-head"><span class="result-label">⚠ Erro na geração</span></div><pre class="result-pre">${escHtml(msg)}</pre></div>`;
+        break;
+      }
+      // status: queued / generating — continua polling
+    }
+
+    if (attempts >= 24) {
+      out.innerHTML = `<div class="result-box err"><div class="result-head"><span class="result-label">⚠ Timeout</span></div><pre class="result-pre">A geração demorou mais de 6 minutos. Tente novamente ou use um prompt menor.</pre></div>`;
+    }
+
+  } catch(e) {
+    out.innerHTML = `<div class="result-box err"><div class="result-head"><span class="result-label">⚠ Erro</span></div><pre class="result-pre">${escHtml(e.message)}</pre></div>`;
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '🎬 Gerar vídeo com Seedance 2.0 →';
+}
+
+function sdDownload(url) {
+  const a = document.createElement('a');
+  a.href = url; a.download = `seedance_${Date.now()}.mp4`; a.target = '_blank'; a.click();
+}
+
+// Init Seedance quando a aba abrir
+document.addEventListener('DOMContentLoaded', sdInitUI);
 </script>
 </body>
 </html>
